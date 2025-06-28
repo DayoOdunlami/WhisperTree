@@ -359,265 +359,914 @@ const FloweringTreeVisualization = ({ isQuiet, volume }) => {
   );
 };
 
-// ===== OPTION 4: CHARACTER TREE (ADAPTED FROM CUTE CODEPEN) =====
+// ===== CHARACTER TREE - FULL ORIGINAL ADAPTATION =====
+// Based on: https://codepen.io/jrvasol/pen/VBRpgb
+// Preserves all original artistic detail and complexity
 
 const CharacterTreeVisualization = ({ isQuiet, volume }) => {
-  const [bees, setBees] = useState([
-    { id: 1, x: -105, y: 210, rotation: 40 },
-    { id: 2, x: -80, y: 140, rotation: 0 },
-    { id: 3, x: 55, y: 150, rotation: 0 }
-  ]);
-
   const [isBlinking, setIsBlinking] = useState(false);
+  const [bees, setBees] = useState([
+    { id: 1, x: 0, y: 0, rotation: 40, path: 0 },
+    { id: 2, x: 0, y: 0, rotation: 0, path: 0 },
+    { id: 3, x: 0, y: 0, rotation: 0, path: 0 }
+  ]);
 
   // Blinking animation
   useEffect(() => {
     const blinkInterval = setInterval(() => {
       setIsBlinking(true);
       setTimeout(() => setIsBlinking(false), 200);
-    }, 3000);
+    }, 2000 + Math.random() * 3000);
     return () => clearInterval(blinkInterval);
   }, []);
 
-  // Bee movement when noisy
-  useEffect(() => {
-    if (!isQuiet) {
-      const moveInterval = setInterval(() => {
-        setBees(prev => prev.map(bee => ({
-          ...bee,
-          x: bee.x + (Math.random() - 0.5) * 20,
-          y: bee.y + (Math.random() - 0.5) * 15,
-          rotation: bee.rotation + (Math.random() - 0.5) * 45
-        })));
-      }, 500);
-      return () => clearInterval(moveInterval);
-    }
-  }, [isQuiet]);
+  // Define colors (from original SASS)
+  const colors = {
+    bg: '#D9E0E7',
+    grass: '#A0BE38',
+    treeBody: '#91633F',
+    treeTop: '#EAD292',
+    treeShade: '#6C4B35',
+    treeShade2: '#C29C57',
+    treeShade3: '#AB814E',
+    treeShade4: '#855737',
+    treeTrunk: '#6D4B36',
+    treeEye: '#392F21',
+    treeBrows: '#6C4B31',
+    stem: '#7C9A2C',
+    stemShadow: '#678127',
+    stemLight: '#A0BE38',
+    petalPink: '#E274A4',
+    petalPinkShadow: '#B75379',
+    petalOrange: '#E07335',
+    petalYellow: '#ECC33F',
+    petalYellowShade: '#E19C34',
+    birdBody: '#89ADBB',
+    birdTail: '#59718B',
+    birdHead: '#D0DFE2'
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen" 
-         style={{ background: '#D9E0E7' }}>
-      
-      <div className="relative border-4 rounded-lg p-8"
-           style={{ 
-             width: '800px', 
-             height: '500px', 
-             borderColor: '#D9E0E7',
-             background: 'linear-gradient(to bottom, #D9E0E7 0%, #A0BE38 100%)'
-           }}>
-
+    <div 
+      className="flex items-center justify-center min-h-screen"
+      style={{ background: colors.bg, overflow: 'hidden' }}
+    >
+      <div 
+        className="relative"
+        style={{
+          width: '800px',
+          height: '500px',
+          border: `3px solid ${colors.bg}`,
+          margin: '100px auto',
+          position: 'relative'
+        }}
+      >
+        
         {/* Grass */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 h-4"
-             style={{ 
-               width: '450px', 
-               background: '#A0BE38',
-               zIndex: 10 
-             }} />
-
-        {/* Character Tree */}
-        <motion.div 
+        <div 
           className="absolute"
-          style={{ 
-            left: '50%', 
-            top: '340px',
-            transform: 'translateX(-50%)',
-            width: '100px',
+          style={{
+            background: colors.grass,
+            height: '16px',
+            width: '450px',
+            zIndex: 10,
+            left: '50%',
+            bottom: '40px',
+            transform: 'translateX(-50%)'
+          }}
+        />
+
+        {/* Main Tree Container */}
+        <motion.div
+          className="absolute"
+          style={{
+            background: colors.treeBody,
             height: '105px',
-            background: '#91633F'
+            width: '100px',
+            top: '340px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            position: 'relative',
+            margin: 'auto'
           }}
           animate={{
-            rotate: isQuiet ? [-0.5, 0.5, -0.5] : [-3, 3, -3],
+            rotate: isQuiet ? [-0.5, 0.5, -0.5] : [-2, 2, -2],
             scale: isQuiet ? 1 : [1, 0.98, 1]
           }}
           transition={{
-            rotate: { duration: isQuiet ? 4 : 0.8, repeat: Infinity },
-            scale: { duration: isQuiet ? 2 : 0.4, repeat: Infinity }
+            rotate: { duration: isQuiet ? 4 : 1, repeat: Infinity },
+            scale: { duration: isQuiet ? 2 : 0.5, repeat: Infinity }
           }}
         >
-          {/* Tree Top */}
-          <div 
-            className="absolute"
+          {/* Tree base extension */}
+          <div
             style={{
-              width: '120px',
-              height: '12px',
-              background: '#EAD292',
-              borderRadius: '10px 10px 0 0',
-              left: '-10px',
-              top: '-10px',
-              zIndex: 4
+              content: '',
+              display: 'block',
+              position: 'absolute',
+              width: '40px',
+              height: '30px',
+              zIndex: 4,
+              bottom: '5px',
+              left: '30px',
+              background: colors.treeBody
             }}
           />
 
-          {/* Tree Face */}
-          <div className="relative" style={{ top: '7px', zIndex: 3 }}>
-            {/* Eyes */}
-            <motion.div
-              className="absolute rounded-full"
+          {/* Tree Top */}
+          <div
+            style={{
+              height: '12px',
+              background: colors.treeTop,
+              width: '120px',
+              left: '-10px',
+              top: '-10px',
+              borderRadius: '10px 10px 0 0',
+              zIndex: 4,
+              position: 'relative',
+              margin: 'auto'
+            }}
+          >
+            {/* Tree top extension */}
+            <div
               style={{
-                width: '10px', height: isBlinking ? '2px' : '10px',
-                background: '#392F21',
-                top: '15px', left: '30%'
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                left: '10px',
+                width: '100px',
+                background: colors.treeBody,
+                height: '10px',
+                top: '12px',
+                zIndex: 3
               }}
-              transition={{ duration: 0.1 }}
             />
+          </div>
+
+          {/* Tree Face Container */}
+          <div
+            style={{
+              position: 'relative',
+              margin: 'auto',
+              top: '7px',
+              zIndex: 3
+            }}
+          >
+            {/* Left Eye */}
             <motion.div
-              className="absolute rounded-full"
               style={{
-                width: '10px', height: isBlinking ? '2px' : '10px',
-                background: '#392F21',
-                top: '15px', left: '60%'
+                position: 'absolute',
+                height: isBlinking ? '2px' : '10px',
+                width: '10px',
+                background: colors.treeEye,
+                top: '15px',
+                left: '30%',
+                borderRadius: '100%'
               }}
               transition={{ duration: 0.1 }}
             />
 
-            {/* Eyebrows */}
-            <div 
-              className="absolute"
+            {/* Left Eyebrow */}
+            <div
               style={{
-                width: '25px', height: '8px',
-                background: '#6C4B31',
-                borderRadius: '20px',
-                top: '0px', left: '20%'
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                height: '8px',
+                width: '25px',
+                top: '0px',
+                left: '20%',
+                background: colors.treeBrows,
+                borderRadius: '20px'
               }}
             />
-            <div 
-              className="absolute"
+
+            {/* Right Eye */}
+            <motion.div
               style={{
-                width: '25px', height: '8px',
-                background: '#6C4B31',
-                borderRadius: '20px',
-                top: '0px', left: '55%'
+                height: isBlinking ? '2px' : '10px',
+                width: '10px',
+                background: colors.treeEye,
+                position: 'absolute',
+                top: '15px',
+                left: '60%',
+                borderRadius: '100%'
+              }}
+              transition={{ duration: 0.1 }}
+            />
+
+            {/* Right Eyebrow */}
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                height: '8px',
+                width: '25px',
+                top: '0px',
+                left: '55%',
+                background: colors.treeBrows,
+                borderRadius: '20px'
               }}
             />
 
             {/* Mouth */}
             <motion.div
-              className="absolute"
               style={{
-                width: '20px', height: isQuiet ? '15px' : '25px',
+                height: isQuiet ? '15px' : '25px',
+                width: '20px',
+                top: isQuiet ? '30px' : '25px',
                 borderRadius: '30px',
-                border: '5px solid #6C4B35',
-                borderColor: 'transparent transparent #6C4B35 transparent',
-                top: isQuiet ? '25px' : '20px',
-                left: '50%',
-                transform: 'translateX(-50%)'
+                position: 'relative',
+                margin: 'auto',
+                border: `5px solid ${colors.treeShade}`,
+                borderColor: `transparent transparent ${colors.treeShade} transparent`
               }}
               transition={{ duration: 0.3 }}
+            >
+              {/* Mouth dots */}
+              <div
+                style={{
+                  content: '',
+                  display: 'block',
+                  width: '5px',
+                  height: '5px',
+                  background: colors.treeShade,
+                  borderRadius: '50%',
+                  position: 'relative',
+                  top: isQuiet ? '10px' : '15px',
+                  left: '-9px',
+                  margin: 'auto'
+                }}
+              />
+              <div
+                style={{
+                  content: '',
+                  display: 'block',
+                  width: '5px',
+                  height: '5px',
+                  background: colors.treeShade,
+                  borderRadius: '50%',
+                  position: 'relative',
+                  top: isQuiet ? '5px' : '10px',
+                  left: '9px',
+                  margin: 'auto'
+                }}
+              />
+            </motion.div>
+          </div>
+
+          {/* Tree Shading System - Complex layered shading from original */}
+          
+          {/* Shade 1 */}
+          <div
+            style={{
+              zIndex: 1,
+              height: '110px',
+              width: '15px',
+              position: 'absolute',
+              left: '0px',
+              top: '-70px',
+              background: colors.treeShade2
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 1,
+                height: '100px',
+                width: '120px',
+                position: 'absolute',
+                border: `15px solid ${colors.treeShade2}`,
+                borderColor: `transparent ${colors.treeShade2} transparent transparent`,
+                boxSizing: 'border-box',
+                borderRadius: '50%',
+                bottom: '-7px',
+                right: '-5px',
+                transform: 'rotate(28deg)'
+              }}
             />
           </div>
 
-          {/* Tree Body Shading */}
-          <div 
-            className="absolute"
+          {/* Shade 2 */}
+          <div
             style={{
-              width: '15px', height: '110px',
-              background: '#C29C57',
-              left: '0px', top: '-70px',
-              zIndex: 1
-            }}
-          />
-        </motion.div>
-
-        {/* Animated Bees */}
-        {bees.map((bee) => (
-          <motion.div
-            key={bee.id}
-            className="absolute"
-            style={{
-              width: '22px', height: '15px',
-              borderRadius: '44%',
-              background: '#ECC33F',
-              left: `${400 + bee.x}px`,
-              top: `${bee.y}px`,
-              zIndex: 5
-            }}
-            animate={{
-              x: isQuiet ? [0, 10, 0] : [0, 30, -20, 0],
-              y: isQuiet ? [0, -5, 0] : [0, -15, 10, 0],
-              rotate: bee.rotation + (isQuiet ? 0 : 15)
-            }}
-            transition={{
-              duration: isQuiet ? 3 : 1,
-              repeat: Infinity,
-              ease: "easeInOut"
+              zIndex: 1,
+              height: '110px',
+              width: '15px',
+              position: 'absolute',
+              top: '-70px',
+              left: '15px',
+              background: colors.treeShade3
             }}
           >
-            {/* Bee stripes */}
-            <div 
-              className="absolute"
+            <div
               style={{
-                width: '14px', height: '8px',
-                background: '#51524C',
-                top: '3px', left: '4px',
-                transform: 'rotate(-90deg)'
+                content: '',
+                display: 'block',
+                zIndex: 3,
+                height: '90px',
+                width: '120px',
+                position: 'absolute',
+                border: `15px solid ${colors.treeShade3}`,
+                borderColor: `transparent ${colors.treeShade3} transparent transparent`,
+                boxSizing: 'border-box',
+                borderRadius: '50%',
+                bottom: '-7px',
+                right: '-5px',
+                transform: 'rotate(30deg)'
               }}
             />
-          </motion.div>
-        ))}
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 2,
+                height: '20px',
+                width: '20px',
+                position: 'absolute',
+                bottom: '0',
+                left: '1px',
+                background: colors.treeBody
+              }}
+            />
+          </div>
 
-        {/* Musical Notes (when quiet) */}
-        {isQuiet && (
-          <>
-            {[1, 2, 3].map((i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: '10px', height: '10px',
-                  background: '#D0DFE2',
-                  left: `${580 + i * 20}px`,
-                  top: `${160 - i * 10}px`,
-                  zIndex: 6
-                }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ 
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0],
-                  y: [0, -20, -40]
-                }}
-                transition={{
-                  duration: 2,
-                  delay: i * 0.3,
-                  repeat: Infinity,
-                  repeatDelay: 1
-                }}
-              />
-            ))}
-          </>
-        )}
-
-        {/* Flowers */}
-        <div className="absolute" style={{ left: '37.6%', top: '250px' }}>
-          <motion.div
-            className="rounded-full"
+          {/* Shade 3 */}
+          <div
             style={{
-              width: '30px', height: '30px',
-              background: '#E274A4',
-              borderRadius: '100px 0px'
+              zIndex: 2,
+              height: '110px',
+              width: '15px',
+              position: 'absolute',
+              top: '-70px',
+              right: '15px',
+              background: colors.treeShade3
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 3,
+                height: '90px',
+                width: '120px',
+                position: 'absolute',
+                border: `15px solid ${colors.treeShade3}`,
+                borderColor: `transparent transparent transparent ${colors.treeShade3}`,
+                boxSizing: 'border-box',
+                borderRadius: '50%',
+                bottom: '-6px',
+                left: '-5px',
+                transform: 'rotate(-30deg)'
+              }}
+            />
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 2,
+                height: '20px',
+                width: '20px',
+                position: 'absolute',
+                bottom: '0',
+                left: '0',
+                background: colors.treeBody
+              }}
+            />
+          </div>
+
+          {/* Shade 4 */}
+          <div
+            style={{
+              zIndex: 1,
+              height: '110px',
+              width: '15px',
+              position: 'absolute',
+              top: '-70px',
+              right: '0',
+              background: colors.treeBody
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 1,
+                height: '90px',
+                width: '120px',
+                position: 'absolute',
+                border: `15px solid ${colors.treeBody}`,
+                borderColor: `transparent transparent transparent ${colors.treeBody}`,
+                boxSizing: 'border-box',
+                borderRadius: '50%',
+                bottom: '-6px',
+                left: '-5px',
+                transform: 'rotate(-30deg)'
+              }}
+            />
+          </div>
+
+          {/* Shade 5 - Central shadow */}
+          <div
+            style={{
+              content: '',
+              display: 'block',
+              height: '40px',
+              width: '15px',
+              background: colors.treeShade4,
+              position: 'absolute',
+              bottom: '-10px',
+              left: '43px',
+              borderRadius: '20px',
+              zIndex: 5
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                height: '15px',
+                width: '15px',
+                background: colors.treeShade4,
+                position: 'absolute',
+                borderRadius: '40%',
+                bottom: '4px',
+                left: '7px'
+              }}
+            />
+          </div>
+
+          {/* Tree Trunk System - Complex multi-layer trunk */}
+          
+          {/* Trunk 1 */}
+          <div
+            style={{
+              position: 'absolute',
+              zIndex: -1,
+              height: '50px',
+              width: '40px',
+              border: '15px solid',
+              borderColor: `transparent transparent ${colors.treeBody} transparent`,
+              borderRadius: '50%',
+              top: '-70px',
+              left: '-35px',
+              transform: 'rotate(30deg)'
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                height: '15px',
+                width: '15px',
+                position: 'absolute',
+                display: 'block',
+                background: colors.treeBody,
+                borderRadius: '100%',
+                left: '-7px',
+                bottom: '-5px',
+                transform: 'rotate(-30deg)'
+              }}
+            />
+          </div>
+
+          {/* Trunk 2 */}
+          <div
+            style={{
+              position: 'absolute',
+              zIndex: -1,
+              height: '50px',
+              width: '70px',
+              border: '15px solid',
+              borderColor: `transparent ${colors.treeTrunk} ${colors.treeTrunk} ${colors.treeTrunk}`,
+              borderRadius: '50%',
+              bottom: '-8px',
+              right: '-85px',
+              transform: 'rotate(5deg)'
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                height: '16px',
+                width: '16px',
+                background: colors.treeTrunk,
+                top: '-5px',
+                right: '-4px',
+                transform: 'rotate(-5deg)',
+                borderRadius: '50%'
+              }}
+            />
+          </div>
+
+          {/* Trunk 3 with leaves */}
+          <div
+            style={{
+              position: 'absolute',
+              zIndex: -1,
+              height: '70px',
+              width: '80px',
+              border: '12px solid',
+              borderColor: `transparent transparent ${colors.treeTrunk} ${colors.treeTrunk}`,
+              borderRadius: '50%',
+              top: '-40px',
+              right: '-60px',
+              transform: 'rotate(-40deg)'
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                height: '10px',
+                width: '50px',
+                background: colors.treeBody,
+                transform: 'rotate(40deg)',
+                right: '-34px',
+                bottom: '-8px'
+              }}
+            />
+
+            {/* Trunk 3 Leaves */}
+            <div
+              style={{
+                position: 'absolute',
+                height: '14px',
+                width: '18px',
+                background: colors.stemLight,
+                borderRadius: '100px 0',
+                left: '65px',
+                top: '36px',
+                transform: 'rotate(-50deg)'
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                height: '14px',
+                width: '18px',
+                background: colors.stem,
+                borderRadius: '100px 0',
+                left: '112px',
+                top: '75px',
+                transform: 'rotate(25deg)'
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                height: '14px',
+                width: '18px',
+                background: colors.stemShadow,
+                borderRadius: '100px 0',
+                left: '95px',
+                top: '95px',
+                transform: 'rotate(125deg)'
+              }}
+            />
+          </div>
+        </motion.div>
+
+        {/* Complex Flower System */}
+        
+        {/* Pink Flower */}
+        <div
+          style={{
+            position: 'relative',
+            margin: 'auto',
+            left: '37.6%',
+            top: '250px'
+          }}
+        >
+          {/* Pink flower stem */}
+          <div
+            style={{
+              position: 'absolute',
+              height: '80px',
+              width: '80px',
+              top: '2px',
+              border: '10px solid',
+              borderColor: `transparent transparent ${colors.stem} ${colors.stem}`,
+              borderRadius: '45%'
+            }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                height: '10px',
+                width: '10px',
+                background: colors.stemShadow,
+                top: '25px',
+                left: '-10px'
+              }}
+            />
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                position: 'absolute',
+                height: '14px',
+                width: '18px',
+                background: colors.stemShadow,
+                top: '92px',
+                left: '19px',
+                borderRadius: '100px 0px'
+              }}
+            />
+          </div>
+
+          {/* Pink flower petals */}
+          <motion.div
+            style={{
+              zIndex: 0,
+              position: 'absolute',
+              height: '30px',
+              width: '30px',
+              top: '2px',
+              left: '-8px',
+              background: '#9D416D',
+              borderRadius: '100px 0px',
+              transform: 'rotate(-40deg)'
             }}
             animate={{
               scale: isQuiet ? [1, 1.1, 1] : [1, 0.9, 1],
-              rotate: [0, 5, 0]
+              rotate: isQuiet ? [-40, -35, -40] : [-40, -50, -40]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 1,
+                position: 'absolute',
+                height: '35px',
+                width: '25px',
+                background: colors.petalPink,
+                borderRadius: '10px 100px 10px 100px',
+                left: '-8px',
+                top: '-8px',
+                transform: 'rotate(50deg)'
+              }}
+            />
+            <div
+              style={{
+                content: '',
+                display: 'block',
+                zIndex: 1,
+                position: 'absolute',
+                height: '35px',
+                width: '25px',
+                left: '7px',
+                top: '7px',
+                background: colors.petalPinkShadow,
+                borderRadius: '100px 10px 100px 10px',
+                transform: 'rotate(38deg)'
+              }}
+            />
+          </motion.div>
+
+          {/* Pink flower dots */}
+          <motion.div
+            style={{
+              height: '10px',
+              width: '10px',
+              background: colors.birdHead,
+              position: 'absolute',
+              borderRadius: '50%',
+              top: '-12px',
+              left: '-7px'
+            }}
+            animate={{
+              opacity: isQuiet ? [1, 0.5, 1] : [1, 0.2, 1],
+              scale: isQuiet ? 1 : [1, 1.2, 1]
             }}
             transition={{ duration: 2, repeat: Infinity }}
           />
+          <motion.div
+            style={{
+              height: '10px',
+              width: '10px',
+              background: colors.birdHead,
+              position: 'absolute',
+              borderRadius: '50%',
+              top: '-12px',
+              left: '14px'
+            }}
+            animate={{
+              opacity: isQuiet ? [1, 0.5, 1] : [1, 0.2, 1],
+              scale: isQuiet ? 1 : [1, 1.2, 1]
+            }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+          />
         </div>
-      </div>
 
-      {/* Status */}
-      <div className="mt-4 text-center">
-        <motion.div 
-          className="text-2xl font-bold"
-          style={{ color: '#91633F' }}
-          animate={{ 
-            scale: isQuiet ? 1 : [1, 1.2, 1],
-            color: isQuiet ? '#91633F' : '#D2691E'
+        {/* Animated Bees with complex movement */}
+        <motion.div
+          style={{
+            height: '15px',
+            width: '22px',
+            borderRadius: '44%',
+            background: colors.petalYellow,
+            position: 'absolute',
+            left: '295px',
+            top: '210px',
+            transform: 'rotate(40deg)'
+          }}
+          animate={{
+            x: isQuiet ? [0, 15, -10, 0] : [0, 30, -30, 20, 0],
+            y: isQuiet ? [0, -10, 5, 0] : [0, -30, 15, -20, 0],
+            rotate: isQuiet ? [40, 50, 30, 40] : [40, 80, 0, 60, 40]
+          }}
+          transition={{
+            duration: isQuiet ? 4 : 2,
+            repeat: Infinity,
+            ease: "easeInOut"
           }}
         >
-          {isQuiet ? "😊 Happy Tree" : "😵 Dizzy Tree!"}
+          <div
+            style={{
+              content: '',
+              display: 'block',
+              position: 'relative',
+              height: '8px',
+              width: '14px',
+              background: '#51524C',
+              transform: 'rotate(-90deg)',
+              top: '3px',
+              left: '4px'
+            }}
+          />
         </motion.div>
-        <div className="mt-2 text-lg" style={{ color: '#6C4B35' }}>
-          {isQuiet ? "The tree is singing!" : "Too much buzzing!"}
+
+        {/* Bird with Musical Notes */}
+        <div
+          style={{
+            zIndex: -2,
+            height: '50px',
+            width: '50px',
+            position: 'relative',
+            margin: 'auto',
+            left: '520px',
+            top: '188px'
+          }}
+        >
+          {/* Bird head */}
+          <div
+            style={{
+              zIndex: 1,
+              position: 'relative',
+              margin: 'auto',
+              top: '2px',
+              height: '14px',
+              width: '12px',
+              background: colors.birdHead
+            }}
+          />
+
+          {/* Bird body */}
+          <div
+            style={{
+              position: 'relative',
+              margin: 'auto',
+              height: '40px',
+              width: '28px',
+              background: colors.birdBody,
+              borderRadius: '100%'
+            }}
+          >
+            <div
+              style={{
+                height: '8px',
+                width: '8px',
+                background: colors.birdTail,
+                borderRadius: '100%',
+                content: '',
+                display: 'block',
+                position: 'relative',
+                top: '8px',
+                left: '10px'
+              }}
+            />
+            <div
+              style={{
+                height: '0',
+                width: '0',
+                content: '',
+                display: 'block',
+                position: 'relative',
+                top: '10px',
+                left: '8px',
+                borderWidth: '6px',
+                borderStyle: 'solid',
+                borderColor: `${colors.birdTail} transparent transparent transparent`
+              }}
+            />
+          </div>
+
+          {/* Bird tail */}
+          <motion.div
+            style={{
+              zIndex: -1,
+              background: colors.birdTail,
+              position: 'relative',
+              margin: 'auto',
+              height: '20px',
+              width: '18px',
+              top: '-5px'
+            }}
+            animate={{
+              rotateX: isQuiet ? [0, 60, 0] : [0, 30, 0]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+
+          {/* Musical Notes - only when quiet */}
+          {isQuiet && (
+            <>
+              {[1, 2, 3].map((i) => (
+                <motion.div
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    width: '10px',
+                    height: '10px',
+                    background: colors.birdHead,
+                    borderRadius: '50%',
+                    left: `${50 + i * 15}px`,
+                    top: `${-10 - i * 10}px`
+                  }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0],
+                    y: [0, -20, -40]
+                  }}
+                  transition={{
+                    duration: 3,
+                    delay: i * 0.5,
+                    repeat: Infinity,
+                    repeatDelay: 2
+                  }}
+                >
+                  {/* Musical note stem */}
+                  <div
+                    style={{
+                      content: '',
+                      display: 'block',
+                      position: 'relative',
+                      height: '10px',
+                      width: '3px',
+                      background: colors.birdHead,
+                      left: '7px',
+                      top: '-6px'
+                    }}
+                  />
+                  {/* Musical note flag */}
+                  <div
+                    style={{
+                      content: '',
+                      display: 'block',
+                      position: 'relative',
+                      height: '7px',
+                      width: '10px',
+                      background: colors.birdHead,
+                      left: '7px',
+                      top: '-20px'
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </>
+          )}
+        </div>
+
+        {/* Status Display */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
+          <motion.div
+            className="text-2xl font-bold mb-2"
+            style={{ color: colors.treeBody }}
+            animate={{
+              scale: isQuiet ? 1 : [1, 1.1, 1],
+              color: isQuiet ? colors.treeBody : colors.treeShade
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            {isQuiet ? "😊 Happy Tree" : "😵 Dizzy Tree!"}
+          </motion.div>
+          <div className="text-lg" style={{ color: colors.treeBrows }}>
+            {isQuiet ? "The tree is singing!" : "Too much buzzing!"}
+          </div>
         </div>
       </div>
     </div>
