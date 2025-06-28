@@ -49,9 +49,10 @@ const SettingsPanel = ({
           onChange={(e) => onTreeTypeChange(e.target.value)}
           className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-transparent"
         >
-          <option value="cherry">🌸 Cherry Blossom</option>
-          <option value="willow">🌿 Willow Tree</option>
-          <option value="oak">🍂 Oak Tree</option>
+          <option value="svg">🌳 SVG Tree</option>
+          <option value="css">🌿 CSS Tree</option>
+          <option value="flowering">🌸 Flowering Tree</option>
+          <option value="character">😊 Character Tree</option>
         </select>
       </div>
 

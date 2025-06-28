@@ -1,5 +1,5 @@
 import React from 'react';
-import TreeVisualization from './TreeVisualization';
+import WhisperTreeVisualization from './components/WhisperTreeVisualization';
 import SettingsPanel from './components/SettingsPanel';
 import StatusIndicator from './components/StatusIndicator';
 import BackgroundEffects from './components/BackgroundEffects';
@@ -93,7 +93,7 @@ const App = () => {
 
       {/* Tree Visualization */}
       <div className="w-full max-w-md flex justify-center items-center mb-8 relative z-10">
-        <TreeVisualization 
+        <WhisperTreeVisualization 
           isQuiet={isQuiet} 
           volume={volume} 
           treeType={settings.treeType} 
