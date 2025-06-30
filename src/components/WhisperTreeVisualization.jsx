@@ -213,10 +213,163 @@ const DetailedFloweringTree = ({ isQuiet, volume }) => {
     }
   }, [isQuiet]);
 
-  // ... (rest of the user's full DetailedFloweringTree code here)
-  // For brevity, please paste the full JSX and logic as in your original message
   return (
-    <div> {/* ...full JSX here... */} </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-200 via-purple-200 to-blue-200">
+      <div className="relative w-96 h-96">
+        <svg width="400" height="400" viewBox="0 0 400 400" className="absolute inset-0">
+          {/* Background Hills */}
+          <ellipse cx="100" cy="380" rx="80" ry="20" fill="#90EE90" opacity="0.6" />
+          <ellipse cx="300" cy="380" rx="60" ry="15" fill="#90EE90" opacity="0.6" />
+          
+          {/* Ground */}
+          <rect x="0" y="350" width="400" height="50" fill="#8FBC8F" />
+          
+          {/* Main Trunk */}
+          <motion.path
+            d="M200 350 L200 200"
+            stroke="#8B4513"
+            strokeWidth="12"
+            fill="none"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: branchGrowth }}
+            transition={{ duration: 2 }}
+          />
+          
+          {/* Primary Branches */}
+          {branchGrowth > 0.3 && (
+            <>
+              <motion.path
+                d="M200 220 L150 180"
+                stroke="#8B4513"
+                strokeWidth="8"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: Math.max(0, (branchGrowth - 0.3) * 1.4) }}
+              />
+              <motion.path
+                d="M200 220 L250 180"
+                stroke="#8B4513"
+                strokeWidth="8"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: Math.max(0, (branchGrowth - 0.3) * 1.4) }}
+              />
+            </>
+          )}
+          
+          {/* Secondary Branches */}
+          {branchGrowth > 0.6 && (
+            <>
+              <motion.path
+                d="M150 180 L120 150"
+                stroke="#8B4513"
+                strokeWidth="6"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
+              />
+              <motion.path
+                d="M150 180 L170 140"
+                stroke="#8B4513"
+                strokeWidth="6"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
+              />
+              <motion.path
+                d="M250 180 L280 150"
+                stroke="#8B4513"
+                strokeWidth="6"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
+              />
+              <motion.path
+                d="M250 180 L230 140"
+                stroke="#8B4513"
+                strokeWidth="6"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
+              />
+            </>
+          )}
+          
+          {/* Flowers */}
+          {flowersVisible.map((flower) => (
+            <motion.g key={flower.id}>
+              {flower.type === 'heart' && (
+                <motion.path
+                  d="M0,0 C-10,-10 -20,-5 -20,5 C-20,15 -10,20 0,25 C10,20 20,15 20,5 C20,-5 10,-10 0,0"
+                  fill={flower.color === 'redflower' ? '#FF6B6B' : 
+                        flower.color === 'blueflower' ? '#4ECDC4' :
+                        flower.color === 'yellowflower' ? '#FFE66D' : '#A8E6CF'}
+                  transform={`translate(${flower.x * 4}, ${flower.y * 4}) scale(0.8)`}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ 
+                    scale: isQuiet ? [0.8, 1.2, 0.8] : [0.8, 0.4, 0.8],
+                    opacity: isQuiet ? 1 : 0.3
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              )}
+              {flower.type === 'tulip' && (
+                <motion.g transform={`translate(${flower.x * 4}, ${flower.y * 4})`}>
+                  <motion.path
+                    d="M0,0 C-5,-10 -10,-5 -10,0 C-10,5 -5,10 0,15 C5,10 10,5 10,0 C10,-5 5,-10 0,0"
+                    fill={flower.color === 'redflower' ? '#FF6B6B' : 
+                          flower.color === 'blueflower' ? '#4ECDC4' :
+                          flower.color === 'yellowflower' ? '#FFE66D' : '#A8E6CF'}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ 
+                      scale: isQuiet ? [1, 1.3, 1] : [1, 0.7, 1],
+                      opacity: isQuiet ? 1 : 0.4
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.g>
+              )}
+              {flower.type === 'petal5' && (
+                <motion.g transform={`translate(${flower.x * 4}, ${flower.y * 4})`}>
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <motion.path
+                      key={i}
+                      d="M0,0 C-3,-8 -8,-3 -8,0 C-8,3 -3,8 0,10 C3,8 8,3 8,0 C8,-3 3,-8 0,0"
+                      fill={flower.color === 'redflower' ? '#FF6B6B' : 
+                            flower.color === 'blueflower' ? '#4ECDC4' :
+                            flower.color === 'yellowflower' ? '#FFE66D' : '#A8E6CF'}
+                      transform={`rotate(${i * 72})`}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ 
+                        scale: isQuiet ? [1, 1.2, 1] : [1, 0.8, 1],
+                        opacity: isQuiet ? 1 : 0.5
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                    />
+                  ))}
+                </motion.g>
+              )}
+            </motion.g>
+          ))}
+        </svg>
+      </div>
+
+      <div className="text-center mt-4">
+        <div className="text-xl font-bold text-purple-800 mb-2">
+          {isQuiet ? "🌸 Flowers Blooming" : "🍂 Petals Falling"}
+        </div>
+        <div className="text-lg text-purple-600">
+          Flowers: {flowersVisible.length} | Growth: {Math.round(branchGrowth * 100)}%
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -239,11 +392,66 @@ const FractalTreeVisualization = ({ isQuiet, volume }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     canvas.width = 500;
     canvas.height = 400;
-    // ... (rest of the user's full FractalTreeVisualization code here)
-    // For brevity, please paste the full drawing and animation logic as in your original message
+    
+    const drawTree = (x, y, length, angle, depth) => {
+      if (depth === 0) return;
+      
+      const endX = x + length * Math.cos(angle);
+      const endY = y - length * Math.sin(angle);
+      
+      // Draw branch
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(endX, endY);
+      ctx.strokeStyle = isQuiet 
+        ? `hsl(${120 + depth * 20}, 70%, ${40 + depth * 10}%)`
+        : `hsl(${30 + depth * 15}, 80%, ${50 + depth * 5}%)`;
+      ctx.lineWidth = depth * 2;
+      ctx.stroke();
+      
+      // Draw leaves at the end
+      if (depth === 1) {
+        ctx.beginPath();
+        ctx.arc(endX, endY, 3, 0, Math.PI * 2);
+        ctx.fillStyle = isQuiet ? '#22c55e' : '#f59e0b';
+        ctx.fill();
+      }
+      
+      // Recursive branches
+      const newLength = length * 0.7;
+      const angleOffset = isQuiet ? 0.3 : 0.5;
+      const chaos = isQuiet ? 0.1 : 0.3;
+      
+      drawTree(endX, endY, newLength, angle + angleOffset + (Math.random() - 0.5) * chaos, depth - 1);
+      drawTree(endX, endY, newLength, angle - angleOffset + (Math.random() - 0.5) * chaos, depth - 1);
+    };
+    
+    const animate = () => {
+      // Clear canvas
+      ctx.fillStyle = isQuiet 
+        ? 'rgba(34, 197, 94, 0.1)' 
+        : 'rgba(245, 158, 11, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw ground
+      ctx.fillStyle = '#2d5016';
+      ctx.fillRect(0, 350, canvas.width, 50);
+      
+      // Draw tree
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height - 50);
+      drawTree(0, 0, 80, Math.PI / 2, Math.floor(treeComplexity));
+      ctx.restore();
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -252,7 +460,22 @@ const FractalTreeVisualization = ({ isQuiet, volume }) => {
   }, [isQuiet, volume, treeComplexity]);
 
   return (
-    <div> {/* ...full JSX here... */} </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-900 via-blue-900 to-purple-900">
+      <canvas 
+        ref={canvasRef} 
+        className="border-2 border-green-400 rounded-lg shadow-lg"
+        style={{ width: '500px', height: '400px' }}
+      />
+      
+      <div className="text-center mt-4">
+        <div className="text-xl font-bold text-white mb-2">
+          {isQuiet ? "🌳 Fractal Growing" : "🌪️ Chaos Mode"}
+        </div>
+        <div className="text-lg text-green-200">
+          Complexity: {Math.round(treeComplexity * 10)}% | Depth: {Math.floor(treeComplexity)}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -299,10 +522,78 @@ const CharacterTreeFull = ({ isQuiet, volume }) => {
     }
   }, [isQuiet]);
 
-  // ... (rest of the user's full CharacterTreeFull code here)
-  // For brevity, please paste the full JSX and logic as in your original message
   return (
-    <div> {/* ...full JSX here... */} </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-yellow-200 via-orange-200 to-red-200">
+      <div className="relative w-96 h-96">
+        <svg width="400" height="400" viewBox="0 0 400 400" className="absolute inset-0">
+          {/* Background */}
+          <rect x="0" y="0" width="400" height="400" fill="#FFE4B5" />
+          
+          {/* Ground */}
+          <rect x="0" y="350" width="400" height="50" fill="#8FBC8F" />
+          
+          {/* Tree Trunk */}
+          <rect x="190" y="250" width="20" height="100" fill="#8B4513" />
+          
+          {/* Tree Crown */}
+          <circle cx="200" cy="200" r="60" fill="#228B22" />
+          <circle cx="200" cy="180" r="40" fill="#32CD32" />
+          <circle cx="200" cy="160" r="25" fill="#90EE90" />
+          
+          {/* Character Face */}
+          <circle cx="200" cy="160" r="15" fill="#FFE4B5" />
+          
+          {/* Eyes */}
+          <circle cx="195" cy="155" r="2" fill="#000" />
+          <circle cx="205" cy="155" r="2" fill="#000" />
+          
+          {/* Blinking Animation */}
+          {isBlinking && (
+            <>
+              <rect x="193" y="153" width="4" height="4" fill="#FFE4B5" />
+              <rect x="203" y="153" width="4" height="4" fill="#FFE4B5" />
+            </>
+          )}
+          
+          {/* Mouth */}
+          <path 
+            d={isQuiet ? "M195 165 Q200 170 205 165" : "M195 165 Q200 160 205 165"}
+            stroke="#000" 
+            strokeWidth="2" 
+            fill="none" 
+          />
+          
+          {/* Bees */}
+          {beePositions.map((bee) => (
+            <motion.g
+              key={bee.id}
+              transform={`translate(${200 + bee.x}, ${200 + bee.y}) rotate(${bee.rotation})`}
+            >
+              <circle cx="0" cy="0" r="3" fill="#FFD700" />
+              <path d="M-5 -2 L-8 -4 M5 -2 L8 -4" stroke="#000" strokeWidth="1" />
+              <path d="M-5 2 L-8 4 M5 2 L8 4" stroke="#000" strokeWidth="1" />
+            </motion.g>
+          ))}
+          
+          {/* Flowers around tree */}
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <motion.g key={i} transform={`translate(${150 + i * 20}, ${320 + Math.sin(i) * 10})`}>
+              <circle cx="0" cy="0" r="8" fill={['#FF6B6B', '#4ECDC4', '#FFE66D', '#A8E6CF'][i % 4]} />
+              <circle cx="0" cy="0" r="4" fill="#FFF" />
+            </motion.g>
+          ))}
+        </svg>
+      </div>
+
+      <div className="text-center mt-4">
+        <div className="text-xl font-bold text-orange-800 mb-2">
+          {isQuiet ? "😊 Happy Tree" : "😵 Dizzy Tree"}
+        </div>
+        <div className="text-lg text-orange-600">
+          Bees: {beePositions.length} | Status: {isQuiet ? 'Calm' : 'Chaotic'}
+        </div>
+      </div>
+    </div>
   );
 };
 

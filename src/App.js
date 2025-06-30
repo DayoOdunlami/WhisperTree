@@ -1,5 +1,6 @@
 import React from 'react';
 import WhisperTreeVisualization from './components/WhisperTreeVisualization';
+import TreeDevelopmentPage from './components/TreeDevelopmentPage';
 import SettingsPanel from './components/SettingsPanel';
 import StatusIndicator from './components/StatusIndicator';
 import BackgroundEffects from './components/BackgroundEffects';
@@ -10,6 +11,7 @@ const App = () => {
   const [audio, setAudio] = React.useState(null);
   const [showSettings, setShowSettings] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(true);
+  const [isDevelopmentMode, setIsDevelopmentMode] = React.useState(true); // Start in dev mode
 
   // Local storage hooks
   const [settings, setSettings] = useWhisperTreeSettings();
@@ -46,8 +48,37 @@ const App = () => {
     setSettings(prev => ({ ...prev, showProgress: !showProgress }));
   };
 
+  // Show development page if in development mode
+  if (isDevelopmentMode) {
+    return (
+      <div>
+        {/* Development Mode Toggle */}
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setIsDevelopmentMode(false)}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg"
+          >
+            🚀 Switch to App Mode
+          </button>
+        </div>
+        
+        <TreeDevelopmentPage />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center font-child p-4 relative">
+      {/* Development Mode Toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={() => setIsDevelopmentMode(true)}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg"
+        >
+          🔧 Switch to Dev Mode
+        </button>
+      </div>
+
       {/* Background Effects */}
       <BackgroundEffects 
         isQuiet={isQuiet} 
