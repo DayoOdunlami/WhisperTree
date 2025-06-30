@@ -173,7 +173,7 @@ const MyauTreeOriginal = ({ isQuiet, volume }) => {
   }, []);
 
   return (
-    <div className="container">
+    <div className="container flex flex-col items-center">
       <svg id="animation" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 302.7 436.37">
         <defs>
           <linearGradient id="Degrade_sans_nom_18" data-name="Degrade sans nom 18" x1="156.31" y1="365.15" x2="246.31" y2="431.81" gradientUnits="userSpaceOnUse">
@@ -254,10 +254,15 @@ const MyauTreeOriginal = ({ isQuiet, volume }) => {
           </g>
         </g>
       </svg>
-      <header>
-        <h1>Simple svg animation with GreenSock</h1>
-        <button className="play-again" onClick={playAgain}>Play again</button>
-      </header>
+      <div className="mt-2 flex flex-col items-center">
+        <span className="text-xs text-gray-400 mb-1">Original GSAP SVG Animation</span>
+        <button
+          className="px-3 py-1 rounded border border-green-400 text-green-700 text-xs hover:bg-green-50 transition-colors"
+          onClick={playAgain}
+        >
+          🔄 Play again
+        </button>
+      </div>
     </div>
   );
 };

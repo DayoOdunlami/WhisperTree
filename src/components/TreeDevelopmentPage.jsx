@@ -79,15 +79,14 @@ const TreeDevelopmentPage = () => {
         </div>
       </div>
 
-      {/* Tree Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+      {/* Tree Carousel Row */}
+      <div className="flex gap-6 max-w-7xl mx-auto overflow-x-auto pb-4 hide-scrollbar">
         {treeTypes.map((tree) => (
-          <div key={tree.id} className="bg-black/20 rounded-lg p-4 backdrop-blur-sm">
+          <div key={tree.id} className="min-w-[340px] bg-black/20 rounded-lg p-4 backdrop-blur-sm flex-shrink-0">
             <div className="text-center mb-4">
               <h3 className="text-xl font-bold text-white mb-1">{tree.name}</h3>
               <p className="text-sm text-gray-300">{tree.description}</p>
             </div>
-            
             <div className="relative h-80 bg-black/30 rounded-lg overflow-hidden">
               <WhisperTreeVisualization 
                 isQuiet={isQuiet} 
@@ -95,7 +94,6 @@ const TreeDevelopmentPage = () => {
                 treeType={tree.id}
               />
             </div>
-            
             <div className="text-center mt-3">
               <div className="text-xs text-gray-400">
                 Type: {tree.id}
