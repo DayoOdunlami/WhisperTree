@@ -1,35 +1,11 @@
-﻿import React, { useEffect, useRef } from 'react';
-import './MyauTreeOriginal.css';
-import { gsap } from 'gsap';
+import React from 'react';
 
-const MyauTreeOriginal = ({ isQuiet, volume }) => {
-  const tlRef = useRef(null);
-
-  useEffect(() => {
-    // Simple animation setup
-    gsap.set("#tree", { scale: 0 });
-    gsap.to("#tree", { scale: 1, duration: 2, delay: 0.5 });
-    
-    return () => {
-      if (tlRef.current) {
-        tlRef.current.kill();
-      }
-    };
-  }, []);
-
+const MyauTreeOriginal = () => {
   return (
-    <div className="container">
-      <svg id="animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302.7 436.37">
-        <g id="tree">
-          <circle cx="150" cy="200" r="50" fill="#45aa3a"/>
-          <rect x="140" y="250" width="20" height="100" fill="#8B4513"/>
-        </g>
-      </svg>
-      <header>
-        <h1>Myau Tree Original</h1>
-      </header>
+    <div>
+      <h1>Myau Tree Original Minimal</h1>
     </div>
   );
 };
 
-export default MyauTreeOriginal;
+export default MyauTreeOriginal; 
