@@ -22,7 +22,8 @@ const TreeDevelopmentPage = () => {
     { id: 'growing', name: '🌱 Growing Tree', description: 'GSAP-style growing animations' },
     { id: 'flowering', name: '🌺 Flowering Tree', description: 'Scene.js-style with flowers' },
     { id: 'fractal', name: '🌳 Fractal Tree', description: 'Canvas-based recursive patterns' },
-    { id: 'character', name: '😊 Character Tree', description: 'Full detail with characters' }
+    { id: 'character', name: '😊 Character Tree', description: 'Full detail with characters' },
+    { id: 'myau-original', name: '🌿 Myau Original', description: 'Original CodePen with GSAP' }
   ];
 
   return (

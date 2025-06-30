@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MyauTreeOriginal from './MyauTreeOriginal';
 
 // ===== OPTION 1: SIMPLE GROWING TREE SVG (MYAU CODEPEN) =====
 // Original: https://codepen.io/Myau/pen/wbmmeK
@@ -609,6 +610,8 @@ const WhisperTreeVisualization = ({ isQuiet, volume, treeType = 'growing' }) => 
       return <FractalTreeVisualization isQuiet={isQuiet} volume={volume} />;
     case 'character':
       return <CharacterTreeFull isQuiet={isQuiet} volume={volume} />;
+    case 'myau-original':
+      return <MyauTreeOriginal isQuiet={isQuiet} volume={volume} />;
     default:
       return <GrowingTreeVisualization isQuiet={isQuiet} volume={volume} />;
   }
