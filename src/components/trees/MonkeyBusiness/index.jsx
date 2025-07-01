@@ -6,7 +6,6 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
   const processingRef = useRef(null);
 
   useEffect(() => {
-    // Load Processing.js dynamically
     const loadProcessing = async () => {
       if (window.Processing) {
         initializeAnimation();
@@ -23,15 +22,13 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
       if (!canvasRef.current || processingRef.current) return;
 
       const canvas = canvasRef.current;
-      
-      // Set canvas size explicitly
       canvas.width = 600;
       canvas.height = 600;
       
       const sketchProc = function(processingInstance) {
         const p = processingInstance;
         
-        // Make Processing.js functions available globally within the sketch
+        // Bind all Processing.js functions
         const size = p.size.bind(p);
         const frameRate = p.frameRate.bind(p);
         const smooth = p.smooth.bind(p);
@@ -113,12 +110,10 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
               
               // branches
               strokeWeight(10);
-              // left branch
               bezier(541 + this.anim.cactus.xoff, 470,
                      529 + this.anim.cactus.xoff, 470,
                      520 + this.anim.cactus.xoff, 475,
                      520 + this.anim.cactus.xoff, 459);
-              // right branch
               bezier(540 + this.anim.cactus.xoff, 481,
                      552 + this.anim.cactus.xoff, 482,
                      561 + this.anim.cactus.xoff, 484,
@@ -236,7 +231,6 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
           app.go();
         };
 
-        // Add a simple test animation to verify canvas is working
         p.setup = function() {
           console.log('Processing.js setup complete');
         };
@@ -260,14 +254,6 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
       }
     };
   }, []);
-
-  // Audio reactivity (optional enhancement)
-  useEffect(() => {
-    if (!processingRef.current) return;
-    
-    // You can add audio reactivity here if needed
-    // For now, the animation runs independently as per original
-  }, [isQuiet, volume, isPlaying]);
 
   return (
     <div className="monkey-business-container">
