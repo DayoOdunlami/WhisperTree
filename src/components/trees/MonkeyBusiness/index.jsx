@@ -29,8 +29,14 @@ const MonkeyBusiness = () => {
         // Cactus class
         function Cactus() {}
         Cactus.prototype.draw = function() {
-          p.fill(0, 0, 255); // blue
-          p.rect(100, 100, 100, 100); // blue rectangle
+          // Draw a simple cactus-like bezier (thick green line)
+          p.stroke(0, 200, 0);
+          p.strokeWeight(20);
+          p.noFill();
+          // Draw a vertical bezier (cactus trunk)
+          p.bezier(300, 400, 300, 350, 300, 250, 300, 200);
+          p.strokeWeight(1);
+          p.noStroke();
         };
         let cactus;
         p.setup = function() {
