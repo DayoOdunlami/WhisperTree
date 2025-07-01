@@ -101,6 +101,20 @@ export const treeRegistry = {
         isPlaying: true,
         energyLevel: 0.5
       }
+    },
+    'monkey-business': {
+      id: 'monkey-business',
+      name: '🐒 Monkey Business',
+      description: 'Complex Processing.js animation with 5 animated objects',
+      codepenUrl: 'https://codepen.io/grantjenkins/pen/myddbvq',
+      component: 'MonkeyBusiness',
+      category: 'processing',
+      difficulty: 'expert',
+      hasAudioReactivity: false,
+      defaultSettings: {
+        isPlaying: true,
+        frameRate: 60
+      }
     }
   },
 
@@ -144,7 +158,8 @@ export const treeRegistry = {
       'character',
       'growing',
       'grant-jenkins-1',
-      'grant-jenkins-2'
+      'grant-jenkins-2',
+      'monkey-business'
     ];
   },
 
@@ -181,6 +196,11 @@ export const treeCategories = {
     name: 'Geometric Trees',
     description: 'Mathematical and abstract patterns',
     icon: '📐'
+  },
+  processing: {
+    name: 'Processing.js Trees',
+    description: 'Complex animations with Processing.js',
+    icon: '🎬'
   }
 };
 
