@@ -37,6 +37,9 @@ const MonkeyBusiness = () => {
           p.bezier(541, 449, 541, 469, 541, 488, 541, 507);
           p.strokeWeight(1);
           p.noStroke();
+          // Draw the cactus pot (original quad coordinates)
+          p.fill(139, 69, 19); // brown
+          p.quad(517, 500, 562, 500, 554, 545, 525, 545);
         };
         let cactus;
         p.setup = function() {
