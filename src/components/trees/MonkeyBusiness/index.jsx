@@ -23,6 +23,11 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
       if (!canvasRef.current || processingRef.current) return;
 
       const canvas = canvasRef.current;
+      
+      // Set canvas size explicitly
+      canvas.width = 600;
+      canvas.height = 600;
+      
       const sketchProc = function(processingInstance) {
         const p = processingInstance;
         
@@ -179,7 +184,7 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
           return Cactus;
         })();
 
-        // Simplified App class for now
+        // App class
         var App = (function() {
           App = function() {
             this.timer = 0;
@@ -230,10 +235,17 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
         p.draw = function() {
           app.go();
         };
+
+        // Add a simple test animation to verify canvas is working
+        p.setup = function() {
+          console.log('Processing.js setup complete');
+        };
       };
 
       try {
         processingRef.current = new Processing(canvas, sketchProc);
+        console.log('Processing.js initialized successfully');
+        console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
       } catch (error) {
         console.error('Error initializing Processing.js:', error);
       }
@@ -263,6 +275,8 @@ const MonkeyBusiness = ({ isQuiet, volume, isPlaying }) => {
         ref={canvasRef}
         id="monkey-business-canvas"
         className="monkey-business-canvas"
+        width="600"
+        height="600"
       />
     </div>
   );
