@@ -21,7 +21,7 @@ const TreeDevelopmentPage = () => {
 
   const treeTypes = [
     { id: 'growing', name: '🌱 Growing Tree', description: 'GSAP-style growing animations' },
-    { id: 'flowering', name: '🌺 Flowering Tree', description: 'Scene.js-style with flowers' },
+    { id: 'flowering', name: '🌺 Flowering Tree', description: 'Original Scene.js CodePen' },
     { id: 'fractal', name: '🌳 Fractal Tree', description: 'Canvas-based recursive patterns' },
     { id: 'character', name: '😊 Character Tree', description: 'Full detail with characters' },
     { id: 'myau-original', name: '🌿 Myau Original', description: 'Original CodePen with GSAP' },
@@ -90,11 +90,15 @@ const TreeDevelopmentPage = () => {
               <p className="text-sm text-gray-300">{tree.description}</p>
             </div>
             <div className="relative h-80 bg-black/30 rounded-lg overflow-hidden">
-              <WhisperTreeVisualization 
-                isQuiet={isQuiet} 
-                volume={volume} 
-                treeType={tree.id}
-              />
+              {tree.id === 'flowering' || tree.id === 'flowering-original' ? (
+                <FloweringTree />
+              ) : (
+                <WhisperTreeVisualization 
+                  isQuiet={isQuiet} 
+                  volume={volume} 
+                  treeType={tree.id}
+                />
+              )}
             </div>
             <div className="text-center mt-3">
               <div className="text-xs text-gray-400">
@@ -103,9 +107,6 @@ const TreeDevelopmentPage = () => {
             </div>
           </div>
         ))}
-        <div className="tree-card">
-          <FloweringTree />
-        </div>
       </div>
 
       {/* Development Notes */}

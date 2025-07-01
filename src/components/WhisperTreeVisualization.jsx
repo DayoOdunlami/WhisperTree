@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MyauTreeOriginal from './MyauTreeOriginal';
+import FloweringTree from './FloweringTree';
 
 // ===== OPTION 1: SIMPLE GROWING TREE SVG (MYAU CODEPEN) =====
 // Original: https://codepen.io/Myau/pen/wbmmeK
@@ -180,194 +181,6 @@ const GrowingTreeVisualization = ({ isQuiet, volume }) => {
         </div>
         <div className="text-lg text-gray-200">
           Growth: {Math.round(growthProgress * 100)}%
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ===== OPTION 2: SCENE.JS FLOWERING TREE (DETAILED ORIGINAL) =====
-// Original: https://codepen.io/daybrush/pen/EQPPBg
-
-const DetailedFloweringTree = ({ isQuiet, volume }) => {
-  const [flowersVisible, setFlowersVisible] = useState([]);
-  const [branchGrowth, setBranchGrowth] = useState(0);
-
-  useEffect(() => {
-    if (isQuiet) {
-      setBranchGrowth(prev => Math.min(prev + 0.02, 1));
-      // Add flowers periodically when quiet
-      const flowerInterval = setInterval(() => {
-        const newFlower = {
-          id: Date.now(),
-          type: ['heart', 'tulip', 'petal5'][Math.floor(Math.random() * 3)],
-          color: ['redflower', 'blueflower', 'yellowflower', 'purpleflower'][Math.floor(Math.random() * 4)],
-          x: Math.random() * 80 + 10,
-          y: Math.random() * 60 + 20
-        };
-        setFlowersVisible(prev => [...prev, newFlower].slice(-20));
-      }, 1500);
-      return () => clearInterval(flowerInterval);
-    } else {
-      setBranchGrowth(prev => Math.max(prev - 0.05, 0.2));
-      setFlowersVisible([]);
-    }
-  }, [isQuiet]);
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-200 via-purple-200 to-blue-200">
-      <div className="relative w-96 h-96">
-        <svg width="400" height="400" viewBox="0 0 400 400" className="absolute inset-0">
-          {/* Background Hills */}
-          <ellipse cx="100" cy="380" rx="80" ry="20" fill="#90EE90" opacity="0.6" />
-          <ellipse cx="300" cy="380" rx="60" ry="15" fill="#90EE90" opacity="0.6" />
-          
-          {/* Ground */}
-          <rect x="0" y="350" width="400" height="50" fill="#8FBC8F" />
-          
-          {/* Main Trunk */}
-          <motion.path
-            d="M200 350 L200 200"
-            stroke="#8B4513"
-            strokeWidth="12"
-            fill="none"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: branchGrowth }}
-            transition={{ duration: 2 }}
-          />
-          
-          {/* Primary Branches */}
-          {branchGrowth > 0.3 && (
-            <>
-              <motion.path
-                d="M200 220 L150 180"
-                stroke="#8B4513"
-                strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: Math.max(0, (branchGrowth - 0.3) * 1.4) }}
-              />
-              <motion.path
-                d="M200 220 L250 180"
-                stroke="#8B4513"
-                strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: Math.max(0, (branchGrowth - 0.3) * 1.4) }}
-              />
-            </>
-          )}
-          
-          {/* Secondary Branches */}
-          {branchGrowth > 0.6 && (
-            <>
-              <motion.path
-                d="M150 180 L120 150"
-                stroke="#8B4513"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
-              />
-              <motion.path
-                d="M150 180 L170 140"
-                stroke="#8B4513"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
-              />
-              <motion.path
-                d="M250 180 L280 150"
-                stroke="#8B4513"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
-              />
-              <motion.path
-                d="M250 180 L230 140"
-                stroke="#8B4513"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: Math.max(0, (branchGrowth - 0.6) * 2.5) }}
-              />
-            </>
-          )}
-          
-          {/* Flowers */}
-          {flowersVisible.map((flower) => (
-            <motion.g key={flower.id}>
-              {flower.type === 'heart' && (
-                <motion.path
-                  d="M0,0 C-10,-10 -20,-5 -20,5 C-20,15 -10,20 0,25 C10,20 20,15 20,5 C20,-5 10,-10 0,0"
-                  fill={flower.color === 'redflower' ? '#FF6B6B' : 
-                        flower.color === 'blueflower' ? '#4ECDC4' :
-                        flower.color === 'yellowflower' ? '#FFE66D' : '#A8E6CF'}
-                  transform={`translate(${flower.x * 4}, ${flower.y * 4}) scale(0.8)`}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ 
-                    scale: isQuiet ? [0.8, 1.2, 0.8] : [0.8, 0.4, 0.8],
-                    opacity: isQuiet ? 1 : 0.3
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              )}
-              {flower.type === 'tulip' && (
-                <motion.g transform={`translate(${flower.x * 4}, ${flower.y * 4})`}>
-                  <motion.path
-                    d="M0,0 C-5,-10 -10,-5 -10,0 C-10,5 -5,10 0,15 C5,10 10,5 10,0 C10,-5 5,-10 0,0"
-                    fill={flower.color === 'redflower' ? '#FF6B6B' : 
-                          flower.color === 'blueflower' ? '#4ECDC4' :
-                          flower.color === 'yellowflower' ? '#FFE66D' : '#A8E6CF'}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ 
-                      scale: isQuiet ? [1, 1.3, 1] : [1, 0.7, 1],
-                      opacity: isQuiet ? 1 : 0.4
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </motion.g>
-              )}
-              {flower.type === 'petal5' && (
-                <motion.g transform={`translate(${flower.x * 4}, ${flower.y * 4})`}>
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <motion.path
-                      key={i}
-                      d="M0,0 C-3,-8 -8,-3 -8,0 C-8,3 -3,8 0,10 C3,8 8,3 8,0 C8,-3 3,-8 0,0"
-                      fill={flower.color === 'redflower' ? '#FF6B6B' : 
-                            flower.color === 'blueflower' ? '#4ECDC4' :
-                            flower.color === 'yellowflower' ? '#FFE66D' : '#A8E6CF'}
-                      transform={`rotate(${i * 72})`}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ 
-                        scale: isQuiet ? [1, 1.2, 1] : [1, 0.8, 1],
-                        opacity: isQuiet ? 1 : 0.5
-                      }}
-                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-                    />
-                  ))}
-                </motion.g>
-              )}
-            </motion.g>
-          ))}
-        </svg>
-      </div>
-
-      <div className="text-center mt-4">
-        <div className="text-xl font-bold text-purple-800 mb-2">
-          {isQuiet ? "🌸 Flowers Blooming" : "🍂 Petals Falling"}
-        </div>
-        <div className="text-lg text-purple-600">
-          Flowers: {flowersVisible.length} | Growth: {Math.round(branchGrowth * 100)}%
         </div>
       </div>
     </div>
@@ -605,7 +418,7 @@ const WhisperTreeVisualization = ({ isQuiet, volume, treeType = 'growing' }) => 
     case 'growing':
       return <GrowingTreeVisualization isQuiet={isQuiet} volume={volume} />;
     case 'flowering':
-      return <DetailedFloweringTree isQuiet={isQuiet} volume={volume} />;
+      return <FloweringTree />;
     case 'fractal':
       return <FractalTreeVisualization isQuiet={isQuiet} volume={volume} />;
     case 'character':
