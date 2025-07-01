@@ -190,6 +190,14 @@ const MonkeyBusiness = () => {
 
         var app = new App();
         p.draw = function() {
+          // Debug: fill background white, draw a large red rectangle at (0,0), and display frameCount
+          p.background(255);
+          p.fill(255, 0, 0);
+          p.rect(0, 0, 200, 200);
+          p.fill(0);
+          p.textSize(32);
+          p.text('Frame: ' + p.frameCount, 220, 50);
+          console.log('Processing.js draw running, frame:', p.frameCount);
           app.go();
           // Log cactus position and state
           console.log('Cactus x:', app.cactus.x, 'y:', app.cactus.y, 'state:', app.cactus.state);
