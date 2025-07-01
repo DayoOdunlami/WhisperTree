@@ -69,6 +69,15 @@ function App() {
     setCurrentView('main');
   };
 
+  // Audio control handlers
+  const handleQuietToggle = () => {
+    setIsQuiet(true);
+  };
+
+  const handleLoudToggle = () => {
+    setIsQuiet(false);
+  };
+
   return (
     <div className="App min-h-screen bg-gray-50">
       {/* Top Navigation Bar */}
@@ -81,6 +90,9 @@ function App() {
         onViewChange={handleViewChange}
         currentView={currentView}
         onSettingsClick={handleSettingsClick}
+        isQuiet={isQuiet}
+        onQuietToggle={handleQuietToggle}
+        onLoudToggle={handleLoudToggle}
       />
 
       {/* Main Content */}
@@ -191,35 +203,6 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Quick Controls (for testing) */}
-      <div className="fixed bottom-4 right-4 flex space-x-2">
-        <motion.button
-          onClick={() => setIsQuiet(true)}
-          className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            isQuiet 
-              ? 'bg-green-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-green-100'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          🌱 Quiet
-        </motion.button>
-        
-        <motion.button
-          onClick={() => setIsQuiet(false)}
-          className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            !isQuiet 
-              ? 'bg-red-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-red-100'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          🍃 Loud
-        </motion.button>
-      </div>
     </div>
   );
 }

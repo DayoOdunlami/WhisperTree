@@ -10,10 +10,10 @@ const MainTreeView = ({
   onTreeChange 
 }) => {
   return (
-    <div className="main-tree-view min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-purple-50 pt-16">
-      <div className="relative w-full h-screen">
+    <div className="main-tree-view w-full h-screen bg-gradient-to-br from-blue-50 via-green-50 to-purple-50">
+      <div className="relative w-full h-full">
         
-        {/* Tree Visualization Container */}
+        {/* Tree Visualization Container - Full Screen */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center"
           initial={{ opacity: 0 }}
@@ -27,7 +27,7 @@ const MainTreeView = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
-              className="tree-container relative"
+              className="w-full h-full flex items-center justify-center"
             >
               <WhisperTreeVisualization
                 treeType={currentTree}
@@ -103,7 +103,7 @@ const MainTreeView = ({
 
         {/* Audio Status Indicator */}
         <motion.div
-          className="absolute top-24 right-8 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg"
+          className="absolute top-8 right-8 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.7 }}

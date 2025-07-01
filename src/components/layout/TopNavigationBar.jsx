@@ -11,7 +11,10 @@ const TopNavigationBar = ({
   onRestart,
   onViewChange,
   currentView,
-  onSettingsClick 
+  onSettingsClick,
+  isQuiet,
+  onQuietToggle,
+  onLoudToggle
 }) => {
   return (
     <motion.div 
@@ -47,16 +50,36 @@ const TopNavigationBar = ({
           />
         </div>
         
-        {/* Right: Navigation & Future Audio */}
+        {/* Right: Navigation & Audio Controls */}
         <div className="flex items-center space-x-4">
-          <motion.button 
-            className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100/50 rounded-lg hover:bg-gray-200/50 transition-colors opacity-50 cursor-not-allowed"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            title="Audio controls coming soon"
-          >
-            🎵 Audio (Soon)
-          </motion.button>
+          {/* Quick Audio Controls */}
+          <div className="flex space-x-2">
+            <motion.button
+              onClick={onQuietToggle}
+              className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                isQuiet 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-green-100'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🌱 Quiet
+            </motion.button>
+            
+            <motion.button
+              onClick={onLoudToggle}
+              className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                !isQuiet 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-red-100'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🍃 Loud
+            </motion.button>
+          </div>
           
           <motion.button 
             onClick={() => onViewChange('development')}
