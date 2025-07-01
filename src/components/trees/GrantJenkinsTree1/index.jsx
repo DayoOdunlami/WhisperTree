@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './styles.css';
 
-const GrantJenkinsTree1 = ({ isQuiet, volume }) => {
+const GrantJenkinsTree1 = ({ isQuiet, volume, isPlaying = true }) => {
   const [growthStage, setGrowthStage] = useState(0);
   const [particles, setParticles] = useState([]);
   const [windIntensity, setWindIntensity] = useState(0);

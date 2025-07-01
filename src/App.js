@@ -1,198 +1,227 @@
-import React from 'react';
-import WhisperTreeVisualization from './components/WhisperTreeVisualization';
-import TreeDevelopmentPage from './components/TreeDevelopmentPage';
-import SettingsPanel from './components/SettingsPanel';
-import StatusIndicator from './components/StatusIndicator';
-import BackgroundEffects from './components/BackgroundEffects';
-import { useAudioMeter } from './hooks/useAudioMeter';
-import { useWhisperTreeSettings, useWhisperTreeProgress } from './hooks/useLocalStorage';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import TopNavigationBar from './components/layout/TopNavigationBar';
+import MainTreeView from './components/pages/MainTreeView';
+import DevelopmentGrid from './components/pages/DevelopmentGrid';
+import { treeRegistry } from './utils/treeRegistry';
+import './index.css';
 
-const App = () => {
-  const [audio, setAudio] = React.useState(null);
-  const [showSettings, setShowSettings] = React.useState(false);
-  const [showProgress, setShowProgress] = React.useState(true);
-  const [isDevelopmentMode, setIsDevelopmentMode] = React.useState(true); // Start in dev mode
+function App() {
+  // State management
+  const [currentView, setCurrentView] = useState('main'); // 'main' or 'development'
+  const [currentTree, setCurrentTree] = useState('growing');
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isQuiet, setIsQuiet] = useState(true);
+  const [volume, setVolume] = useState(0.3);
+  const [showSettings, setShowSettings] = useState(false);
 
-  // Local storage hooks
-  const [settings, setSettings] = useWhisperTreeSettings();
-  const [progress, updateProgress, resetProgress] = useWhisperTreeProgress();
+  // Auto-toggle for testing (can be removed later)
+  const [autoToggle, setAutoToggle] = useState(false);
 
-  const { volume, isQuiet, isListening, testQuiet, testLoud } = useAudioMeter(audio, settings.threshold);
+  useEffect(() => {
+    if (!autoToggle) return;
+    
+    const interval = setInterval(() => {
+      setIsQuiet(prev => !prev);
+      setVolume(prev => prev > 0.5 ? 0.2 : 0.8);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [autoToggle]);
 
-  const startMicrophone = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setAudio(stream);
-    } catch (err) {
-      alert('Microphone access denied. Please allow microphone to use WhisperTree.');
+  // Tree selection handler
+  const handleTreeSelect = (treeId) => {
+    if (treeRegistry.isValidTree(treeId)) {
+      setCurrentTree(treeId);
+      // Switch to main view when selecting a tree from development grid
+      if (currentView === 'development') {
+        setCurrentView('main');
+      }
     }
   };
 
-  const stopMicrophone = () => {
-    if (audio) {
-      audio.getTracks().forEach(track => track.stop());
-      setAudio(null);
-    }
+  // Play/pause handler
+  const handlePlayToggle = () => {
+    setIsPlaying(!isPlaying);
   };
 
-  const handleSensitivityChange = (newThreshold) => {
-    setSettings(prev => ({ ...prev, threshold: newThreshold }));
+  // Restart handler
+  const handleRestart = () => {
+    // Trigger a re-render by temporarily changing the key
+    setCurrentTree(prev => {
+      setTimeout(() => setCurrentTree(prev), 100);
+      return 'temp';
+    });
   };
 
-  const handleTreeTypeChange = (newTreeType) => {
-    setSettings(prev => ({ ...prev, treeType: newTreeType }));
+  // View change handler
+  const handleViewChange = (view) => {
+    setCurrentView(view);
   };
 
-  const handleToggleProgress = () => {
-    setShowProgress(!showProgress);
-    setSettings(prev => ({ ...prev, showProgress: !showProgress }));
+  // Settings handler
+  const handleSettingsClick = () => {
+    setShowSettings(!showSettings);
   };
 
-  // Show development page if in development mode
-  if (isDevelopmentMode) {
-    return (
-      <div>
-        {/* Development Mode Toggle */}
-        <div className="fixed top-4 right-4 z-50">
-          <button
-            onClick={() => setIsDevelopmentMode(false)}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg"
-          >
-            🚀 Switch to App Mode
-          </button>
-        </div>
-        
-        <TreeDevelopmentPage />
-      </div>
-    );
-  }
+  // Back to main view handler
+  const handleBackToMain = () => {
+    setCurrentView('main');
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-900 via-purple-800 to-green-800 relative">
-      {/* Sticky Top Bar with All Controls */}
-      <div className="sticky top-0 z-50 w-full bg-black/30 backdrop-blur-md flex flex-wrap items-center justify-between px-6 py-3 gap-4 shadow-lg">
-        <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-white tracking-wide">WhisperTree</h1>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          {!isListening ? (
-            <button
-              onClick={startMicrophone}
-              className="bg-green-500 hover:bg-green-600 text-white rounded-full px-4 py-2 shadow-lg text-lg transition-colors"
-            >
-              🎤 Start Listening
-            </button>
-          ) : (
-            <button
-              onClick={stopMicrophone}
-              className="bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2 shadow-lg text-lg transition-colors"
-            >
-              🔇 Stop Listening
-            </button>
-          )}
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 shadow-lg text-lg transition-colors"
-          >
-            ⚙️ Settings
-          </button>
-          <button
-            onClick={handleToggleProgress}
-            className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-4 py-2 shadow-lg text-lg transition-colors"
-          >
-            📊 {showProgress ? 'Hide' : 'Show'} Progress
-          </button>
-          <select
-            value={settings.treeType}
-            onChange={e => handleTreeTypeChange(e.target.value)}
-            className="bg-white/80 text-gray-800 rounded px-3 py-2 shadow focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="growing">🌱 Growing Tree</option>
-            <option value="flowering">🌺 Flowering Tree</option>
-            <option value="fractal">🌳 Fractal Tree</option>
-            <option value="character">😊 Character Tree</option>
-            <option value="myau-original">🌿 Myau Original</option>
-            <option value="flowering-original">🌸 Flowering Original</option>
-          </select>
-          <button
-            onClick={() => setIsDevelopmentMode(true)}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg ml-2"
-          >
-            🔧 Dev Mode
-          </button>
-        </div>
-      </div>
-
-      {/* Settings Panel (Floating) */}
-      {showSettings && (
-        <div className="absolute left-1/2 top-24 z-40 -translate-x-1/2 w-full max-w-md">
-          <SettingsPanel
-            sensitivity={settings.threshold}
-            onSensitivityChange={handleSensitivityChange}
-            treeType={settings.treeType}
-            onTreeTypeChange={handleTreeTypeChange}
-            onTestQuiet={testQuiet}
-            onTestLoud={testLoud}
-          />
-        </div>
-      )}
-
-      {/* Status Indicator (Floating) */}
-      <div className="absolute right-6 top-24 z-40">
-        <StatusIndicator
-          volume={volume}
-          isQuiet={isQuiet}
-          isListening={isListening}
-        />
-      </div>
-
-      {/* Main Tree Visualization - Fullscreen Centered */}
-      <div className="flex-1 flex items-center justify-center w-full h-full min-h-[60vh]">
-        <div className="w-full h-full flex items-center justify-center">
-          <WhisperTreeVisualization 
-            isQuiet={isQuiet} 
-            volume={volume} 
-            treeType={settings.treeType} 
-          />
-        </div>
-      </div>
-
-      {/* Progress Summary (Floating at Bottom) */}
-      {showProgress && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 rounded-lg p-4 shadow-lg max-w-sm mx-auto z-40">
-          <h3 className="text-lg font-bold text-gray-800 mb-2 text-center">📈 Your Progress</h3>
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-green-600">
-                {Math.floor(progress.totalQuietTime / 60)}m
-              </div>
-              <div className="text-sm text-gray-600">Total Quiet Time</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600">
-                {progress.sessionsCompleted}
-              </div>
-              <div className="text-sm text-gray-600">Sessions</div>
-            </div>
-          </div>
-          <button
-            onClick={resetProgress}
-            className="w-full mt-3 bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
-          >
-            Reset Progress
-          </button>
-        </div>
-      )}
-
-      {/* Background Effects (behind everything) */}
-      <BackgroundEffects 
-        isQuiet={isQuiet} 
-        volume={volume} 
-        quietTime={progress.totalQuietTime}
-        showCelebration={settings.enableCelebrations}
+    <div className="App min-h-screen bg-gray-50">
+      {/* Top Navigation Bar */}
+      <TopNavigationBar
+        currentTree={currentTree}
+        onTreeSelect={handleTreeSelect}
+        isPlaying={isPlaying}
+        onPlayToggle={handlePlayToggle}
+        onRestart={handleRestart}
+        onViewChange={handleViewChange}
+        currentView={currentView}
+        onSettingsClick={handleSettingsClick}
       />
+
+      {/* Main Content */}
+      <AnimatePresence mode="wait">
+        {currentView === 'main' ? (
+          <motion.div
+            key="main"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <MainTreeView
+              currentTree={currentTree}
+              isPlaying={isPlaying}
+              isQuiet={isQuiet}
+              volume={volume}
+              onTreeChange={handleTreeSelect}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="development"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <DevelopmentGrid
+              currentTree={currentTree}
+              onTreeSelect={handleTreeSelect}
+              isQuiet={isQuiet}
+              volume={volume}
+              onBackToMain={handleBackToMain}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Settings Panel (Future Implementation) */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSettings(false)}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold mb-4">Settings</h2>
+              
+              {/* Auto-toggle for testing */}
+              <div className="mb-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={autoToggle}
+                    onChange={(e) => setAutoToggle(e.target.checked)}
+                    className="rounded"
+                  />
+                  <span>Auto-toggle for testing</span>
+                </label>
+              </div>
+
+              {/* Volume control */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Test Volume: {Math.round(volume * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Quiet/Loud toggle */}
+              <div className="mb-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={isQuiet}
+                    onChange={(e) => setIsQuiet(e.target.checked)}
+                    className="rounded"
+                  />
+                  <span>Quiet Mode</span>
+                </label>
+              </div>
+
+              <button
+                onClick={() => setShowSettings(false)}
+                className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Quick Controls (for testing) */}
+      <div className="fixed bottom-4 right-4 flex space-x-2">
+        <motion.button
+          onClick={() => setIsQuiet(true)}
+          className={`px-3 py-2 rounded-lg text-sm font-medium ${
+            isQuiet 
+              ? 'bg-green-500 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-green-100'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          🌱 Quiet
+        </motion.button>
+        
+        <motion.button
+          onClick={() => setIsQuiet(false)}
+          className={`px-3 py-2 rounded-lg text-sm font-medium ${
+            !isQuiet 
+              ? 'bg-red-500 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-red-100'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          🍃 Loud
+        </motion.button>
+      </div>
     </div>
   );
-};
+}
 
 export default App;

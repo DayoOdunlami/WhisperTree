@@ -415,24 +415,24 @@ const CharacterTreeFull = ({ isQuiet, volume }) => {
 
 // ===== MAIN INTEGRATION COMPONENT =====
 
-const WhisperTreeVisualization = ({ isQuiet, volume, treeType = 'growing' }) => {
+const WhisperTreeVisualization = ({ isQuiet, volume, treeType = 'growing', isPlaying = true }) => {
   switch (treeType) {
     case 'growing':
-      return <GrowingTreeVisualization isQuiet={isQuiet} volume={volume} />;
+      return <GrowingTreeVisualization isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'flowering':
-      return <FloweringTree />;
+      return <FloweringTree isPlaying={isPlaying} />;
     case 'fractal':
-      return <FractalTreeVisualization isQuiet={isQuiet} volume={volume} />;
+      return <FractalTreeVisualization isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'character':
-      return <CharacterTreeFull isQuiet={isQuiet} volume={volume} />;
+      return <CharacterTreeFull isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'myau-original':
-      return <MyauTreeOriginal isQuiet={isQuiet} volume={volume} />;
+      return <MyauTreeOriginal isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'grant-jenkins-1':
-      return <GrantJenkinsTree1 isQuiet={isQuiet} volume={volume} />;
+      return <GrantJenkinsTree1 isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'grant-jenkins-2':
-      return <GrantJenkinsTree2 isQuiet={isQuiet} volume={volume} />;
+      return <GrantJenkinsTree2 isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     default:
-      return <GrowingTreeVisualization isQuiet={isQuiet} volume={volume} />;
+      return <GrowingTreeVisualization isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
   }
 };
 
