@@ -75,12 +75,12 @@ const MonkeyBusiness = () => {
         };
         Cactus.prototype = {
           draw: function() {
-            // Debug: draw a black rectangle at cactus.x, cactus.y
+            // Debug: draw a black rectangle at (300 + this.x, 300 + this.y)
             fill(0, 0, 0);
-            rect(this.x, this.y, 30, 30);
-            // Continue with original drawing
+            rect(300 + this.x, 300 + this.y, 30, 30);
+            // Continue with original drawing, offset by (300, 300)
             pushMatrix();
-            translate(this.x, this.y);
+            translate(300 + this.x, 300 + this.y);
             noFill();
             stroke(this.colors.cactus);
             strokeWeight(21);
