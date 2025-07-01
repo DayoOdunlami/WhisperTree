@@ -1,0 +1,126 @@
+.grant-jenkins-tree-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+}
+
+.tree-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.tree-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+}
+
+.tree-status {
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.status-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.growth-indicator {
+  font-size: 1rem;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .tree-container {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .status-text {
+    font-size: 1.2rem;
+  }
+  
+  .growth-indicator {
+    font-size: 0.9rem;
+  }
+}
+
+/* Enhanced particle effects */
+.particle {
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Tree glow effect */
+.tree-glow {
+  filter: drop-shadow(0 0 10px rgba(34, 139, 34, 0.5));
+}
+
+/* Wind effect */
+.wind-sway {
+  animation: sway 3s ease-in-out infinite;
+}
+
+/* Growth animation */
+.growth-animation {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Audio reactive states */
+.quiet-state {
+  filter: brightness(1.1) saturate(1.2);
+}
+
+.loud-state {
+  filter: brightness(0.9) saturate(0.8) contrast(1.1);
+} 

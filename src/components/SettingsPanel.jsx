@@ -53,6 +53,9 @@ const SettingsPanel = ({
           <option value="flowering">🌺 Flowering Tree (Scene.js Style)</option>
           <option value="fractal">🌳 Fractal Tree (Canvas)</option>
           <option value="character">😊 Character Tree (Full Detail)</option>
+          <option value="myau-original">🌿 Myau Original (GSAP)</option>
+          <option value="grant-jenkins-1">🌿 Grant Jenkins Tree 1 (SVG Particles)</option>
+          <option value="grant-jenkins-2">⚡ Grant Jenkins Tree 2 (Geometric Energy)</option>
         </select>
       </div>
 

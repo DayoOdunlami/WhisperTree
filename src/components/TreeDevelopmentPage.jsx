@@ -25,7 +25,8 @@ const TreeDevelopmentPage = () => {
     { id: 'fractal', name: '🌳 Fractal Tree', description: 'Canvas-based recursive patterns' },
     { id: 'character', name: '😊 Character Tree', description: 'Full detail with characters' },
     { id: 'myau-original', name: '🌿 Myau Original', description: 'Original CodePen with GSAP' },
-    { id: 'flowering-original', name: '🌸 Flowering Original', description: 'Original Scene.js CodePen' },
+    { id: 'grant-jenkins-1', name: '🌿 Grant Jenkins Tree 1', description: 'Sophisticated SVG with particles' },
+    { id: 'grant-jenkins-2', name: '⚡ Grant Jenkins Tree 2', description: 'Geometric energy system' },
   ];
 
   return (
