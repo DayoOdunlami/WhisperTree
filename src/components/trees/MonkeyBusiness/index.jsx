@@ -29,12 +29,12 @@ const MonkeyBusiness = () => {
         // Cactus class
         function Cactus() {}
         Cactus.prototype.draw = function() {
-          // Draw a simple cactus-like bezier (thick green line)
+          // Draw the original cactus trunk bezier (from original Processing.js code)
           p.stroke(0, 200, 0);
-          p.strokeWeight(20);
+          p.strokeWeight(21);
           p.noFill();
-          // Draw a vertical bezier (cactus trunk)
-          p.bezier(300, 400, 300, 350, 300, 250, 300, 200);
+          // Original trunk bezier coordinates
+          p.bezier(541, 449, 541, 469, 541, 488, 541, 507);
           p.strokeWeight(1);
           p.noStroke();
         };
