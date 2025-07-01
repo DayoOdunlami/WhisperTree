@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import WhisperTreeVisualization from './WhisperTreeVisualization';
+import FloweringTree from './FloweringTree';
 
 const TreeDevelopmentPage = () => {
   const [isQuiet, setIsQuiet] = useState(true);
@@ -23,7 +24,8 @@ const TreeDevelopmentPage = () => {
     { id: 'flowering', name: '🌺 Flowering Tree', description: 'Scene.js-style with flowers' },
     { id: 'fractal', name: '🌳 Fractal Tree', description: 'Canvas-based recursive patterns' },
     { id: 'character', name: '😊 Character Tree', description: 'Full detail with characters' },
-    { id: 'myau-original', name: '🌿 Myau Original', description: 'Original CodePen with GSAP' }
+    { id: 'myau-original', name: '🌿 Myau Original', description: 'Original CodePen with GSAP' },
+    { id: 'flowering-original', name: '🌸 Flowering Original', description: 'Original Scene.js CodePen' },
   ];
 
   return (
@@ -101,6 +103,9 @@ const TreeDevelopmentPage = () => {
             </div>
           </div>
         ))}
+        <div className="tree-card">
+          <FloweringTree />
+        </div>
       </div>
 
       {/* Development Notes */}
