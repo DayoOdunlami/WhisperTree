@@ -24,7 +24,7 @@ const MonkeyBusiness = () => {
       canvas.width = 600;
       canvas.height = 600;
 
-      // Processing.js sketch: background + animated cactus
+      // Processing.js sketch: background + animated cactus with debug
       const sketchProc = function(p) {
         // Helper bindings
         const color = p.color.bind(p);
@@ -53,14 +53,14 @@ const MonkeyBusiness = () => {
           console.log('Processing.js setup complete');
         };
 
-        // Cactus class (from original)
+        // Cactus class (from original) with debug
         var Cactus = function(args) {
           this.x = args.x || 100;
           this.y = args.y || 0;
           this.colors = args.colors || {
-            pot: color(123, 206, 246),
-            cactus: color(100, 189, 107),
-            shadow: color(40, 40, 40, 20)
+            pot: color(0, 0, 0), // black for debug
+            cactus: color(0, 0, 0), // black for debug
+            shadow: color(0, 0, 0, 255) // black for debug
           };
           this.anim = {
             cactus: {
@@ -75,9 +75,12 @@ const MonkeyBusiness = () => {
         };
         Cactus.prototype = {
           draw: function() {
+            // Debug: draw a black rectangle at cactus.x, cactus.y
+            fill(0, 0, 0);
+            rect(this.x, this.y, 30, 30);
+            // Continue with original drawing
             pushMatrix();
             translate(this.x, this.y);
-            // cactus
             noFill();
             stroke(this.colors.cactus);
             strokeWeight(21);
@@ -85,7 +88,6 @@ const MonkeyBusiness = () => {
                    this.anim.cactus.x2 + this.anim.cactus.xoff * 0.75, this.anim.cactus.y2,
                    this.anim.cactus.x3 + this.anim.cactus.xoff * 0.5, this.anim.cactus.y3,
                    this.anim.cactus.x4, this.anim.cactus.y4);
-            // branches
             strokeWeight(10);
             bezier(541 + this.anim.cactus.xoff, 470,
                    529 + this.anim.cactus.xoff, 470,
@@ -95,12 +97,10 @@ const MonkeyBusiness = () => {
                    552 + this.anim.cactus.xoff, 482,
                    561 + this.anim.cactus.xoff, 484,
                    561 + this.anim.cactus.xoff, 473);
-            // feet
             strokeWeight(8);
             line(533, 536, 533, 550 + this.anim.feet.y1);
             line(546, 536, 546, 550 + this.anim.feet.y2);
             strokeWeight(1);
-            // pot
             noStroke();
             fill(this.colors.pot);
             quad(517, 500, 562, 500, 554, 545, 525, 545);
@@ -191,7 +191,8 @@ const MonkeyBusiness = () => {
         var app = new App();
         p.draw = function() {
           app.go();
-          console.log('Processing draw running');
+          // Log cactus position and state
+          console.log('Cactus x:', app.cactus.x, 'y:', app.cactus.y, 'state:', app.cactus.state);
         };
       };
 
