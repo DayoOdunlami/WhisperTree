@@ -1,340 +1,925 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 import './styles.css';
 
 const GrantJenkinsTree2 = ({ isQuiet, volume, isPlaying = true }) => {
-  const [branches, setBranches] = useState([]);
-  const [energyLevel, setEnergyLevel] = useState(0);
-  const [pulsePhase, setPulsePhase] = useState(0);
-  const [geometricShapes, setGeometricShapes] = useState([]);
-  const animationRef = useRef();
+  const canvasRef = useRef(null);
+  const processingInstanceRef = useRef(null);
 
-  // Audio-reactive energy system
   useEffect(() => {
-    if (isQuiet) {
-      setEnergyLevel(prev => Math.min(prev + 0.02, 1));
-    } else {
-      setEnergyLevel(prev => Math.max(prev - 0.05, 0.2));
-    }
-  }, [isQuiet, volume]);
+    const loadProcessing = () => {
+      return new Promise((resolve, reject) => {
+        if (window.Processing) {
+          resolve(window.Processing);
+          return;
+        }
 
-  // Pulse animation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPulsePhase(prev => (prev + 0.1) % (Math.PI * 2));
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Generate geometric branches
-  useEffect(() => {
-    const generateBranches = () => {
-      const newBranches = [];
-      const maxBranches = Math.floor(5 + energyLevel * 10);
-      
-      for (let i = 0; i < maxBranches; i++) {
-        const angle = (i / maxBranches) * Math.PI * 2;
-        const length = 30 + Math.random() * 50 * energyLevel;
-        const x = 200 + Math.cos(angle) * (50 + i * 10);
-        const y = 300 - i * 15;
-        
-        newBranches.push({
-          id: i,
-          x1: 200,
-          y1: 350,
-          x2: x,
-          y2: y,
-          angle: angle,
-          length: length,
-          thickness: 8 - i * 0.5,
-          color: `hsl(${120 + i * 20}, 70%, ${50 + energyLevel * 20}%)`
-        });
-      }
-      setBranches(newBranches);
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js';
+        script.onload = () => resolve(window.Processing);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
     };
 
-    generateBranches();
-  }, [energyLevel]);
+    const initProcessing = async () => {
+      try {
+        const Processing = await loadProcessing();
+        
+        if (!canvasRef.current) return;
 
-  // Generate geometric shapes
-  useEffect(() => {
-    const shapes = [];
-    const numShapes = Math.floor(3 + energyLevel * 8);
-    
-    for (let i = 0; i < numShapes; i++) {
-      const type = ['circle', 'triangle', 'square', 'hexagon'][i % 4];
-      const x = 150 + Math.random() * 100;
-      const y = 150 + Math.random() * 100;
-      const size = 5 + Math.random() * 15;
-      
-      shapes.push({
-        id: i,
-        type,
-        x,
-        y,
-        size,
-        rotation: Math.random() * 360,
-        color: `hsl(${200 + i * 30}, 80%, ${60 + energyLevel * 20}%)`,
-        opacity: 0.3 + energyLevel * 0.7
-      });
-    }
-    setGeometricShapes(shapes);
-  }, [energyLevel]);
+        const sketchProc = function(processingInstance) {
+          with (processingInstance) {
+            size(600, 600);
+            frameRate(60);
+            textFont(createFont("Trebuchet MS"));
+            smooth();
 
-  const renderShape = (shape) => {
-    const { type, x, y, size, rotation, color, opacity } = shape;
-    
-    switch (type) {
-      case 'circle':
-        return (
-          <motion.circle
-            cx={x}
-            cy={y}
-            r={size}
-            fill={color}
-            opacity={opacity}
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [rotation, rotation + 360]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: shape.id * 0.2
-            }}
-          />
-        );
-      case 'triangle':
-        return (
-          <motion.polygon
-            points={`${x},${y - size} ${x - size},${y + size} ${x + size},${y + size}`}
-            fill={color}
-            opacity={opacity}
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [rotation, rotation + 180]
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              delay: shape.id * 0.3
-            }}
-          />
-        );
-      case 'square':
-        return (
-          <motion.rect
-            x={x - size}
-            y={y - size}
-            width={size * 2}
-            height={size * 2}
-            fill={color}
-            opacity={opacity}
-            animate={{
-              scale: [1, 1.15, 1],
-              rotate: [rotation, rotation + 90]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: shape.id * 0.4
-            }}
-          />
-        );
-      case 'hexagon':
-        const points = [];
-        for (let i = 0; i < 6; i++) {
-          const angle = (i / 6) * Math.PI * 2;
-          points.push(`${x + Math.cos(angle) * size},${y + Math.sin(angle) * size}`);
-        }
-        return (
-          <motion.polygon
-            points={points.join(' ')}
-            fill={color}
-            opacity={opacity}
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [rotation, rotation + 120]
-            }}
-            transition={{
-              duration: 3.5,
-              repeat: Infinity,
-              delay: shape.id * 0.5
-            }}
-          />
-        );
-      default:
-        return null;
+            var scene;
+
+            keyPressed = function () {
+              scene.keys[keyCode] = true;
+            };
+
+            keyReleased = function () {
+              scene.keys[keyCode] = false;
+            };
+
+            mouseClicked = function () {
+              scene.clicked = true;
+              scene.started = true;
+            };
+
+            mouseOut = function() {
+              scene.over = false;
+            };
+
+            mouseMoved = function() {
+              scene.over = true;
+              scene.idle.time = millis();
+              if(scene.idle.active) {
+                scene.groot.action = scene.idle.action;
+                scene.action.active = true;
+                scene.action.timer = 240;
+                scene.talkTimer = 50;
+                scene.updateActionButtons();
+                scene.idle.active = false;
+              }
+            };
+
+            var Button = (function() {
+              var Button = function(args) {
+                this.x = args.x;
+                this.y = args.y;
+                this.w = args.w || 75;
+                this.h = args.h || 35;
+                this.content = args.content;
+                this.textSize = args.textSize || this.w * 0.18;
+                this.enabled = true;
+                this.hover = false;
+                this.selected = args.selected || false;
+                this.func = args.func;
+                this.backColor = args.backColor || color(240);
+                this.textColor = color(25);
+              };
+
+              Button.prototype = {
+                over: function() {
+                  return (mouseX > this.x &&
+                          mouseX < this.x + this.w &&
+                          mouseY > this.y &&
+                          mouseY < this.y + this.h);
+                },
+
+                draw: function() {
+                  noStroke();
+                  this.hover = this.over();
+                  if(this.enabled && this.hover) {
+                    scene.hover = true;
+                  }
+                  fill(this.backColor, this.selected ? 100 : this.enabled && this.hover ? 150 : 220);
+                  rect(this.x, this.y, this.w, this.h);
+                  pushStyle();
+                  textAlign(CENTER, CENTER);
+                  textSize(this.textSize);
+                  fill(this.enabled ? this.textColor : color(this.textColor, 100));
+                  text(this.content, this.x + this.w / 2, this.y + this.h / 2);
+                  popStyle();
+                  if(this.enabled && scene.clicked && this.hover) {
+                    this.func();
+                  }
+                }
+              };
+              return Button;
+            })();
+
+            var Groot = (function() {
+              Groot = function() {
+                this.themes = {
+                  summer: {
+                    colors: {
+                      outline: color(61, 38, 37),
+                      dark: color(94, 132, 82),
+                      medium: color(120, 159, 97),
+                      light: color(151, 184, 126)
+                    },
+                    images: {
+                      leafRight: undefined,
+                      leafLeft: undefined
+                    }
+                  },
+                  fall: {
+                    colors: {
+                      outline: color(61, 38, 37),
+                      dark: color(211, 123, 43),
+                      medium: color(217, 138, 70),
+                      light: color(230, 181, 108)
+                    },
+                    images: {
+                      leafRight: undefined,
+                      leafLeft: undefined
+                    }
+                  },
+                  winter: {
+                    colors: {
+                      outline: color(61, 38, 37),
+                      dark: color(82, 122, 130),
+                      medium: color(98, 153, 158),
+                      light: color(127, 178, 184)
+                    },
+                    images: {
+                      leafRight: undefined,
+                      leafLeft: undefined
+                    }
+                  },
+                  spring: {
+                    colors: {
+                      outline: color(61, 38, 37),
+                      dark: color(94, 132, 82),
+                      medium: color(120, 159, 97),
+                      light: color(151, 184, 126)
+                    },
+                    images: {
+                      leafRight: undefined,
+                      leafLeft: undefined
+                    }
+                  }
+                };
+
+                this.theme = this.themes.summer;
+                this.colors = {
+                  outline: color(62, 39, 38),
+                  dark: color(144, 110, 76),
+                  medium: color(169, 135, 87),
+                  light: color(192, 174, 135),
+                };
+
+                this.character = "none";
+                this.coords = {
+                  body: { offset: 0 },
+                  face: { offset: 0, angle: 0 },
+                  arms: {
+                    left: { x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0, x4: 0, y4: 0 },
+                    right: { x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0, x4: 0, y4: 0 }
+                  },
+                  mouth: {
+                    x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0,
+                    x4: 0, y4: 0, x5: 0, y5: 0, x6: 0, y6: 0
+                  },
+                  leaves: [
+                    { scale: 1, scaleMax: 1 }, { scale: 1, scaleMax: 1 },
+                    { scale: 1, scaleMax: 1 }, { scale: 1, scaleMax: 1 },
+                    { scale: 1, scaleMax: 1 }, { scale: 1, scaleMax: 1 },
+                    { scale: 0.85, scaleMax: 0.85 },
+                    { scale: 0.9, scaleMax: 0.9 }, { scale: 0.9, scaleMax: 0.9 }
+                  ],
+                  flowers: [
+                    { scale: 0, scaleMax: 0.5 }, { scale: 0, scaleMax: 0.5 },
+                    { scale: 0, scaleMax: 0.5 }, { scale: 0, scaleMax: 0.5 }
+                  ],
+                  sticks: [
+                    { scale: 0, scaleMax: 0.5 }, { scale: 0, scaleMax: 0.5 },
+                    { scale: 0, scaleMax: 0.5 }, { scale: 0, scaleMax: 0.5 }
+                  ],
+                  snow: [
+                    { x: 230, y: 175, diameter: 40, opacity: 0 },
+                    { x: 280, y: 160, diameter: 30, opacity: 0 },
+                    { x: 330, y: 150, diameter: 40, opacity: 0 },
+                    { x: 370, y: 195, diameter: 25, opacity: 0 }
+                  ]
+                };
+
+                this.action = "idle";
+                this.idle = true;
+                this.active = false;
+                this.blink = { active: false, timer: 0, value: 0 };
+                this.eyeClose = 0;
+                this.vel = 4;
+                this.images = {};
+                this.setup();
+              };
+
+              Groot.prototype = {
+                setup: function() {
+                  // Summer/spring leaf image
+                  pushStyle();
+                  background(0, 0);
+                  noStroke();
+                  fill(this.themes.summer.colors.outline);
+                  beginShape();
+                  vertex(195, 211);
+                  bezierVertex(224, 184, 215, 148, 192, 138);
+                  bezierVertex(170, 152, 164, 184, 195, 211);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.summer.colors.medium);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(174, 162, 175, 182, 194, 204);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.summer.colors.dark);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(199, 168, 198, 184, 194, 199);
+                  endShape(CLOSE);
+                  
+                  noFill();
+                  stroke(this.themes.summer.colors.outline);
+                  strokeWeight(1);
+                  bezier(198, 174, 198, 181, 198, 189, 194, 204);
+                  popStyle();
+                  
+                  this.images.leafRight = get(170, 135, 45, 78);
+                  background(0, 0);
+                  pushMatrix();
+                  translate(45, 0);
+                  scale(-1, 1);
+                  image(this.images.leafRight, 0, 0);
+                  popMatrix();
+                  this.images.leafLeft = get(0, 0, 45, 78);
+
+                  // Autumn leaf image
+                  background(0, 0);
+                  pushStyle();
+                  noStroke();
+                  fill(this.themes.fall.colors.outline);
+                  beginShape();
+                  vertex(195, 211);
+                  bezierVertex(224, 184, 215, 148, 192, 138);
+                  bezierVertex(170, 152, 164, 184, 195, 211);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.fall.colors.medium);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(174, 162, 175, 182, 194, 204);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.fall.colors.dark);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(199, 168, 198, 184, 194, 199);
+                  endShape(CLOSE);
+                  
+                  noFill();
+                  stroke(this.themes.fall.colors.outline);
+                  strokeWeight(1);
+                  bezier(198, 174, 198, 181, 198, 189, 194, 204);
+                  popStyle();
+                  
+                  this.themes.fall.images.leafRight = get(170, 135, 45, 78);
+                  background(0, 0);
+                  pushMatrix();
+                  translate(45, 0);
+                  scale(-1, 1);
+                  image(this.themes.fall.images.leafRight, 0, 0);
+                  popMatrix();
+                  this.themes.fall.images.leafLeft = get(0, 0, 45, 78);
+
+                  // Winter leaf image
+                  background(0, 0);
+                  pushStyle();
+                  noStroke();
+                  fill(this.themes.winter.colors.outline);
+                  beginShape();
+                  vertex(195, 211);
+                  bezierVertex(224, 184, 215, 148, 192, 138);
+                  bezierVertex(170, 152, 164, 184, 195, 211);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.winter.colors.medium);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(174, 162, 175, 182, 194, 204);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.winter.colors.dark);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(199, 168, 198, 184, 194, 199);
+                  endShape(CLOSE);
+                  
+                  noFill();
+                  stroke(this.themes.winter.colors.outline);
+                  strokeWeight(1);
+                  bezier(198, 174, 198, 181, 198, 189, 194, 204);
+                  popStyle();
+                  
+                  this.themes.winter.images.leafRight = get(170, 135, 45, 78);
+                  background(0, 0);
+                  pushMatrix();
+                  translate(45, 0);
+                  scale(-1, 1);
+                  image(this.themes.winter.images.leafRight, 0, 0);
+                  popMatrix();
+                  this.themes.winter.images.leafLeft = get(0, 0, 45, 78);
+
+                  // Spring leaf image
+                  background(0, 0);
+                  pushStyle();
+                  noStroke();
+                  fill(this.themes.spring.colors.outline);
+                  beginShape();
+                  vertex(195, 211);
+                  bezierVertex(224, 184, 215, 148, 192, 138);
+                  bezierVertex(170, 152, 164, 184, 195, 211);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.spring.colors.medium);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(174, 162, 175, 182, 194, 204);
+                  endShape(CLOSE);
+                  
+                  fill(this.themes.spring.colors.dark);
+                  beginShape();
+                  vertex(194, 204);
+                  bezierVertex(216, 181, 210, 161, 193, 144);
+                  bezierVertex(199, 168, 198, 184, 194, 199);
+                  endShape(CLOSE);
+                  
+                  noFill();
+                  stroke(this.themes.spring.colors.outline);
+                  strokeWeight(1);
+                  bezier(198, 174, 198, 181, 198, 189, 194, 204);
+                  popStyle();
+                  
+                  this.themes.spring.images.leafRight = get(170, 135, 45, 78);
+                  background(0, 0);
+                  pushMatrix();
+                  translate(45, 0);
+                  scale(-1, 1);
+                  image(this.themes.spring.images.leafRight, 0, 0);
+                  popMatrix();
+                  this.themes.spring.images.leafLeft = get(0, 0, 45, 78);
+
+                  // Blossom image
+                  background(0, 0);
+                  pushStyle();
+                  noStroke();
+                  fill(255, 255, 255);
+                  ellipse(200, 200, 30, 30);
+                  fill(255, 255, 0);
+                  ellipse(200, 200, 15, 15);
+                  popStyle();
+                  this.images.blossom = get(185, 185, 30, 30);
+
+                  // Stick image
+                  background(0, 0);
+                  pushStyle();
+                  noStroke();
+                  fill(139, 69, 19);
+                  rect(195, 190, 10, 20);
+                  popStyle();
+                  this.images.stick = get(195, 190, 10, 20);
+                },
+
+                draw: function() {
+                  pushStyle();
+                  // Shadow under pot
+                  noStroke();
+                  fill(40, 60);
+                  ellipse(287, 550, 200, 30);
+
+                  pushMatrix();
+                  translate(this.coords.body.offset / 2, 0);
+
+                  // Draw pot
+                  noStroke();
+                  fill(139, 69, 19);
+                  ellipse(287, 520, 80, 60);
+                  fill(160, 82, 45);
+                  ellipse(287, 520, 70, 50);
+
+                  // Draw body
+                  fill(this.colors.dark);
+                  ellipse(287, 450, 60, 80);
+                  fill(this.colors.medium);
+                  ellipse(287, 450, 50, 70);
+
+                  // Draw arms
+                  this.drawArms();
+
+                  // Draw head
+                  fill(this.colors.dark);
+                  ellipse(287, 380, 50, 60);
+                  fill(this.colors.medium);
+                  ellipse(287, 380, 40, 50);
+
+                  // Draw face features
+                  this.drawFace();
+
+                  // Draw leaves
+                  this.drawLeaves();
+
+                  // Draw flowers and sticks
+                  this.drawDecorations();
+
+                  // Draw snow for winter
+                  if (this.theme === this.themes.winter) {
+                    this.drawSnow();
+                  }
+
+                  popMatrix();
+                  popStyle();
+                },
+
+                drawArms: function() {
+                  // Left arm
+                  stroke(this.colors.outline);
+                  strokeWeight(3);
+                  line(this.coords.arms.left.x1, this.coords.arms.left.y1, 
+                       this.coords.arms.left.x2, this.coords.arms.left.y2);
+                  line(this.coords.arms.left.x2, this.coords.arms.left.y2, 
+                       this.coords.arms.left.x3, this.coords.arms.left.y3);
+                  line(this.coords.arms.left.x3, this.coords.arms.left.y3, 
+                       this.coords.arms.left.x4, this.coords.arms.left.y4);
+
+                  // Right arm
+                  line(this.coords.arms.right.x1, this.coords.arms.right.y1, 
+                       this.coords.arms.right.x2, this.coords.arms.right.y2);
+                  line(this.coords.arms.right.x2, this.coords.arms.right.y2, 
+                       this.coords.arms.right.x3, this.coords.arms.right.y3);
+                  line(this.coords.arms.right.x3, this.coords.arms.right.y3, 
+                       this.coords.arms.right.x4, this.coords.arms.right.y4);
+                },
+
+                drawFace: function() {
+                  // Eyes
+                  fill(255);
+                  ellipse(275, 375, 8, 8);
+                  ellipse(299, 375, 8, 8);
+                  
+                  fill(0);
+                  ellipse(275, 375, 4, 4);
+                  ellipse(299, 375, 4, 4);
+
+                  // Mouth
+                  noFill();
+                  stroke(this.colors.outline);
+                  strokeWeight(2);
+                  beginShape();
+                  vertex(this.coords.mouth.x1, this.coords.mouth.y1);
+                  bezierVertex(this.coords.mouth.x2, this.coords.mouth.y2, 
+                              this.coords.mouth.x3, this.coords.mouth.y3, 
+                              this.coords.mouth.x4, this.coords.mouth.y4);
+                  bezierVertex(this.coords.mouth.x5, this.coords.mouth.y5, 
+                              this.coords.mouth.x6, this.coords.mouth.y6, 
+                              this.coords.mouth.x1, this.coords.mouth.y1);
+                  endShape();
+                },
+
+                drawLeaves: function() {
+                  const leafPositions = [
+                    { x: 257, y: 390, angle: -30 },
+                    { x: 317, y: 390, angle: 30 },
+                    { x: 267, y: 370, angle: -15 },
+                    { x: 307, y: 370, angle: 15 },
+                    { x: 277, y: 350, angle: -45 },
+                    { x: 297, y: 350, angle: 45 },
+                    { x: 287, y: 330, angle: 0 },
+                    { x: 267, y: 310, angle: -60 },
+                    { x: 307, y: 310, angle: 60 }
+                  ];
+
+                  leafPositions.forEach((pos, i) => {
+                    if (this.coords.leaves[i]) {
+                      pushMatrix();
+                      translate(pos.x, pos.y);
+                      rotate(radians(pos.angle));
+                      scale(this.coords.leaves[i].scale);
+                      
+                      if (pos.angle < 0) {
+                        image(this.theme.images.leafLeft, -22.5, -39);
+                      } else {
+                        image(this.theme.images.leafRight, -22.5, -39);
+                      }
+                      popMatrix();
+                    }
+                  });
+                },
+
+                drawDecorations: function() {
+                  // Flowers
+                  const flowerPositions = [
+                    { x: 257, y: 390 }, { x: 317, y: 390 },
+                    { x: 267, y: 370 }, { x: 307, y: 370 }
+                  ];
+
+                  flowerPositions.forEach((pos, i) => {
+                    if (this.coords.flowers[i] && this.coords.flowers[i].scale > 0) {
+                      pushMatrix();
+                      translate(pos.x, pos.y);
+                      scale(this.coords.flowers[i].scale);
+                      image(this.images.blossom, -15, -15);
+                      popMatrix();
+                    }
+                  });
+
+                  // Sticks
+                  const stickPositions = [
+                    { x: 277, y: 350 }, { x: 297, y: 350 },
+                    { x: 267, y: 310 }, { x: 307, y: 310 }
+                  ];
+
+                  stickPositions.forEach((pos, i) => {
+                    if (this.coords.sticks[i] && this.coords.sticks[i].scale > 0) {
+                      pushMatrix();
+                      translate(pos.x, pos.y);
+                      scale(this.coords.sticks[i].scale);
+                      image(this.images.stick, -5, -10);
+                      popMatrix();
+                    }
+                  });
+                },
+
+                drawSnow: function() {
+                  this.coords.snow.forEach(snowflake => {
+                    if (snowflake.opacity > 0) {
+                      pushStyle();
+                      noStroke();
+                      fill(255, snowflake.opacity);
+                      ellipse(snowflake.x, snowflake.y, snowflake.diameter, snowflake.diameter);
+                      popStyle();
+                    }
+                  });
+                },
+
+                go: function() {
+                  this.draw();
+                }
+              };
+              return Groot;
+            })();
+
+            var Scene = (function() {
+              Scene = function() {
+                this.clicked = false;
+                this.hover = false;
+                this.over = false;
+                this.keys = [];
+                this.started = false;
+                this.timer = 0;
+                this.talkTimer = 0;
+                
+                this.action = { active: false, timer: 0 };
+                this.idle = { active: true, time: 0, action: "idle" };
+                
+                this.themeButtons = [];
+                this.actionButtons = [];
+                this.characterButtons = [];
+                
+                this.groot = new Groot();
+                this.init();
+              };
+
+              Scene.prototype = {
+                init: function() {
+                  this.setupThemeButtons();
+                  this.setupActionButtons();
+                  this.setupCharacterButtons();
+                },
+
+                setupThemeButtons: function() {
+                  this.themeButtons = [
+                    new Button({
+                      x: 50, y: 50, w: 80, h: 30,
+                      content: "Summer",
+                      func: () => { this.groot.theme = this.groot.themes.summer; }
+                    }),
+                    new Button({
+                      x: 140, y: 50, w: 80, h: 30,
+                      content: "Fall",
+                      func: () => { this.groot.theme = this.groot.themes.fall; }
+                    }),
+                    new Button({
+                      x: 230, y: 50, w: 80, h: 30,
+                      content: "Winter",
+                      func: () => { this.groot.theme = this.groot.themes.winter; }
+                    }),
+                    new Button({
+                      x: 320, y: 50, w: 80, h: 30,
+                      content: "Spring",
+                      func: () => { this.groot.theme = this.groot.themes.spring; }
+                    })
+                  ];
+                },
+
+                setupActionButtons: function() {
+                  this.actionButtons = [
+                    new Button({
+                      x: 50, y: 100, w: 80, h: 30,
+                      content: "Dance",
+                      func: () => { this.triggerAction("dance"); }
+                    }),
+                    new Button({
+                      x: 140, y: 100, w: 80, h: 30,
+                      content: "Sleep",
+                      func: () => { this.triggerAction("sleep"); }
+                    }),
+                    new Button({
+                      x: 230, y: 100, w: 80, h: 30,
+                      content: "Wave",
+                      func: () => { this.triggerAction("wave"); }
+                    }),
+                    new Button({
+                      x: 320, y: 100, w: 80, h: 30,
+                      content: "Eat",
+                      func: () => { this.triggerAction("eat"); }
+                    }),
+                    new Button({
+                      x: 50, y: 140, w: 80, h: 30,
+                      content: "Drink",
+                      func: () => { this.triggerAction("drink"); }
+                    }),
+                    new Button({
+                      x: 140, y: 140, w: 80, h: 30,
+                      content: "Talk",
+                      func: () => { this.triggerAction("talk"); }
+                    }),
+                    new Button({
+                      x: 230, y: 140, w: 80, h: 30,
+                      content: "Juggle",
+                      func: () => { this.triggerAction("juggle"); }
+                    }),
+                    new Button({
+                      x: 320, y: 140, w: 80, h: 30,
+                      content: "Idle",
+                      func: () => { this.triggerAction("idle"); }
+                    })
+                  ];
+                },
+
+                setupCharacterButtons: function() {
+                  this.characterButtons = [
+                    new Button({
+                      x: 50, y: 180, w: 80, h: 30,
+                      content: "None",
+                      func: () => { this.groot.character = "none"; }
+                    }),
+                    new Button({
+                      x: 140, y: 180, w: 80, h: 30,
+                      content: "Pirate",
+                      func: () => { this.groot.character = "pirate"; }
+                    }),
+                    new Button({
+                      x: 230, y: 180, w: 80, h: 30,
+                      content: "Ninja",
+                      func: () => { this.groot.character = "ninja"; }
+                    }),
+                    new Button({
+                      x: 320, y: 180, w: 80, h: 30,
+                      content: "Potter",
+                      func: () => { this.groot.character = "potter"; }
+                    })
+                  ];
+                },
+
+                triggerAction: function(action) {
+                  this.groot.action = action;
+                  this.action.active = true;
+                  this.action.timer = 240;
+                  this.updateActionButtons();
+                },
+
+                updateActionButtons: function() {
+                  this.actionButtons.forEach(button => {
+                    button.selected = button.content.toLowerCase() === this.groot.action;
+                  });
+                },
+
+                update: function() {
+                  this.clicked = false;
+                  this.hover = false;
+                  
+                  // Update action timer
+                  if (this.action.active) {
+                    this.action.timer--;
+                    if (this.action.timer <= 0) {
+                      this.action.active = false;
+                      this.groot.action = "idle";
+                      this.updateActionButtons();
+                    }
+                  }
+
+                  // Update idle system
+                  if (millis() - this.idle.time > 5000 && !this.action.active) {
+                    this.idle.active = true;
+                    const actions = ["dance", "sleep", "wave", "eat", "drink", "talk"];
+                    this.idle.action = actions[Math.floor(Math.random() * actions.length)];
+                  }
+
+                  // Update Groot coordinates based on action
+                  this.updateGrootCoords();
+                },
+
+                updateGrootCoords: function() {
+                  const action = this.groot.action;
+                  const time = millis() * 0.01;
+
+                  // Body sway
+                  this.groot.coords.body.offset = Math.sin(time) * 2;
+
+                  // Face movement
+                  this.groot.coords.face.offset = Math.sin(time * 0.5) * 1;
+                  this.groot.coords.face.angle = Math.sin(time * 0.3) * 5;
+
+                  // Arm movements based on action
+                  switch (action) {
+                    case "dance":
+                      this.groot.coords.arms.left.x1 = 257 + Math.sin(time * 2) * 10;
+                      this.groot.coords.arms.left.y1 = 420 + Math.cos(time * 2) * 5;
+                      this.groot.coords.arms.left.x2 = 247 + Math.sin(time * 2 + 1) * 15;
+                      this.groot.coords.arms.left.y2 = 400 + Math.cos(time * 2 + 1) * 10;
+                      this.groot.coords.arms.left.x3 = 237 + Math.sin(time * 2 + 2) * 20;
+                      this.groot.coords.arms.left.y3 = 380 + Math.cos(time * 2 + 2) * 15;
+                      this.groot.coords.arms.left.x4 = 227 + Math.sin(time * 2 + 3) * 25;
+                      this.groot.coords.arms.left.y4 = 360 + Math.cos(time * 2 + 3) * 20;
+
+                      this.groot.coords.arms.right.x1 = 317 + Math.sin(time * 2 + Math.PI) * 10;
+                      this.groot.coords.arms.right.y1 = 420 + Math.cos(time * 2 + Math.PI) * 5;
+                      this.groot.coords.arms.right.x2 = 327 + Math.sin(time * 2 + Math.PI + 1) * 15;
+                      this.groot.coords.arms.right.y2 = 400 + Math.cos(time * 2 + Math.PI + 1) * 10;
+                      this.groot.coords.arms.right.x3 = 337 + Math.sin(time * 2 + Math.PI + 2) * 20;
+                      this.groot.coords.arms.right.y3 = 380 + Math.cos(time * 2 + Math.PI + 2) * 15;
+                      this.groot.coords.arms.right.x4 = 347 + Math.sin(time * 2 + Math.PI + 3) * 25;
+                      this.groot.coords.arms.right.y4 = 360 + Math.cos(time * 2 + Math.PI + 3) * 20;
+                      break;
+
+                    case "wave":
+                      this.groot.coords.arms.left.x1 = 257; this.groot.coords.arms.left.y1 = 420;
+                      this.groot.coords.arms.left.x2 = 247; this.groot.coords.arms.left.y2 = 400;
+                      this.groot.coords.arms.left.x3 = 237; this.groot.coords.arms.left.y3 = 380;
+                      this.groot.coords.arms.left.x4 = 227; this.groot.coords.arms.left.y4 = 360;
+
+                      this.groot.coords.arms.right.x1 = 317; this.groot.coords.arms.right.y1 = 420;
+                      this.groot.coords.arms.right.x2 = 327; this.groot.coords.arms.right.y2 = 400;
+                      this.groot.coords.arms.right.x3 = 337; this.groot.coords.arms.right.y3 = 380;
+                      this.groot.coords.arms.right.x4 = 347 + Math.sin(time * 3) * 20;
+                      this.groot.coords.arms.right.y4 = 360 + Math.cos(time * 3) * 10;
+                      break;
+
+                    case "sleep":
+                      this.groot.coords.arms.left.x1 = 257; this.groot.coords.arms.left.y1 = 420;
+                      this.groot.coords.arms.left.x2 = 247; this.groot.coords.arms.left.y2 = 400;
+                      this.groot.coords.arms.left.x3 = 237; this.groot.coords.arms.left.y3 = 380;
+                      this.groot.coords.arms.left.x4 = 227; this.groot.coords.arms.left.y4 = 360;
+
+                      this.groot.coords.arms.right.x1 = 317; this.groot.coords.arms.right.y1 = 420;
+                      this.groot.coords.arms.right.x2 = 307; this.groot.coords.arms.right.y2 = 400;
+                      this.groot.coords.arms.right.x3 = 297; this.groot.coords.arms.right.y3 = 380;
+                      this.groot.coords.arms.right.x4 = 287; this.groot.coords.arms.right.y4 = 360;
+                      break;
+
+                    default:
+                      // Idle position
+                      this.groot.coords.arms.left.x1 = 257; this.groot.coords.arms.left.y1 = 420;
+                      this.groot.coords.arms.left.x2 = 247; this.groot.coords.arms.left.y2 = 400;
+                      this.groot.coords.arms.left.x3 = 237; this.groot.coords.arms.left.y3 = 380;
+                      this.groot.coords.arms.left.x4 = 227; this.groot.coords.arms.left.y4 = 360;
+
+                      this.groot.coords.arms.right.x1 = 317; this.groot.coords.arms.right.y1 = 420;
+                      this.groot.coords.arms.right.x2 = 307; this.groot.coords.arms.right.y2 = 400;
+                      this.groot.coords.arms.right.x3 = 297; this.groot.coords.arms.right.y3 = 380;
+                      this.groot.coords.arms.right.x4 = 287; this.groot.coords.arms.right.y4 = 360;
+                      break;
+                  }
+
+                  // Mouth animation
+                  if (action === "talk" || action === "eat") {
+                    const mouthOpen = Math.sin(time * 5) * 0.5 + 0.5;
+                    this.groot.coords.mouth.x1 = 287; this.groot.coords.mouth.y1 = 390;
+                    this.groot.coords.mouth.x2 = 287 + mouthOpen * 5; this.groot.coords.mouth.y2 = 395;
+                    this.groot.coords.mouth.x3 = 287 + mouthOpen * 8; this.groot.coords.mouth.y3 = 400;
+                    this.groot.coords.mouth.x4 = 287; this.groot.coords.mouth.y4 = 405;
+                    this.groot.coords.mouth.x5 = 287 - mouthOpen * 8; this.groot.coords.mouth.y5 = 400;
+                    this.groot.coords.mouth.x6 = 287 - mouthOpen * 5; this.groot.coords.mouth.y6 = 395;
+                  } else {
+                    this.groot.coords.mouth.x1 = 287; this.groot.coords.mouth.y1 = 390;
+                    this.groot.coords.mouth.x2 = 287; this.groot.coords.mouth.y2 = 395;
+                    this.groot.coords.mouth.x3 = 287; this.groot.coords.mouth.y3 = 400;
+                    this.groot.coords.mouth.x4 = 287; this.groot.coords.mouth.y4 = 405;
+                    this.groot.coords.mouth.x5 = 287; this.groot.coords.mouth.y5 = 400;
+                    this.groot.coords.mouth.x6 = 287; this.groot.coords.mouth.y6 = 395;
+                  }
+
+                  // Leaf animations
+                  this.groot.coords.leaves.forEach((leaf, i) => {
+                    leaf.scale = leaf.scaleMax * (0.8 + Math.sin(time + i) * 0.2);
+                  });
+
+                  // Flower and stick animations for spring
+                  if (this.groot.theme === this.groot.themes.spring) {
+                    this.groot.coords.flowers.forEach((flower, i) => {
+                      flower.scale = flower.scaleMax * (0.5 + Math.sin(time * 0.5 + i) * 0.5);
+                    });
+                  } else {
+                    this.groot.coords.flowers.forEach(flower => {
+                      flower.scale = 0;
+                    });
+                  }
+
+                  // Stick animations for fall
+                  if (this.groot.theme === this.groot.themes.fall) {
+                    this.groot.coords.sticks.forEach((stick, i) => {
+                      stick.scale = stick.scaleMax * (0.5 + Math.sin(time * 0.3 + i) * 0.5);
+                    });
+                  } else {
+                    this.groot.coords.sticks.forEach(stick => {
+                      stick.scale = 0;
+                    });
+                  }
+
+                  // Snow animations for winter
+                  if (this.groot.theme === this.groot.themes.winter) {
+                    this.groot.coords.snow.forEach((snowflake, i) => {
+                      snowflake.opacity = 100 + Math.sin(time * 0.2 + i) * 50;
+                      snowflake.y += 0.5;
+                      if (snowflake.y > 600) snowflake.y = 150;
+                    });
+                  } else {
+                    this.groot.coords.snow.forEach(snowflake => {
+                      snowflake.opacity = 0;
+                    });
+                  }
+                },
+
+                draw: function() {
+                  background(34, 34, 34);
+                  
+                  // Draw Groot
+                  this.groot.go();
+                  
+                  // Draw UI buttons
+                  this.themeButtons.forEach(button => button.draw());
+                  this.actionButtons.forEach(button => button.draw());
+                  this.characterButtons.forEach(button => button.draw());
+                },
+
+                go: function() {
+                  this.draw();
+                  this.update();
+                }
+              };
+              return Scene;
+            })();
+
+            scene = new Scene();
+            
+            draw = function() {
+              scene.go();
+            };
+          }
+        };
+
+        processingInstanceRef.current = new Processing(canvasRef.current, sketchProc);
+      } catch (error) {
+        console.error('Error initializing Processing.js:', error);
+      }
+    };
+
+    if (isPlaying) {
+      initProcessing();
     }
-  };
+
+    return () => {
+      if (processingInstanceRef.current) {
+        processingInstanceRef.current.exit();
+        processingInstanceRef.current = null;
+      }
+    };
+  }, [isPlaying]);
 
   return (
     <div className="grant-jenkins-tree-2">
-      <div className="tree-container">
-        <svg width="400" height="400" viewBox="0 0 400 400" className="tree-svg">
-          {/* Background with gradient */}
-          <defs>
-            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={isQuiet ? "#2C3E50" : "#E74C3C"} />
-              <stop offset="50%" stopColor={isQuiet ? "#34495E" : "#C0392B"} />
-              <stop offset="100%" stopColor={isQuiet ? "#1B2631" : "#922B21"} />
-            </linearGradient>
-            <radialGradient id="energyGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="rgba(255, 255, 255, 0.3)" />
-              <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
-            </radialGradient>
-            <filter id="energyFilter">
-              <feGaussianBlur stdDeviation="2" />
-              <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
-            </filter>
-          </defs>
-
-          {/* Background */}
-          <rect x="0" y="0" width="400" height="400" fill="url(#bgGradient)" />
-
-          {/* Energy field */}
-          <motion.circle
-            cx="200"
-            cy="200"
-            r={50 + energyLevel * 100}
-            fill="url(#energyGlow)"
-            opacity={0.3}
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.3, 0.6, 0.3]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity
-            }}
-          />
-
-          {/* Geometric shapes */}
-          <g className="geometric-shapes">
-            {geometricShapes.map(renderShape)}
-          </g>
-
-          {/* Main trunk */}
-          <motion.rect
-            x="195"
-            y="300"
-            width="10"
-            height={100 + energyLevel * 50}
-            fill="#8B4513"
-            animate={{
-              height: [100 + energyLevel * 50, 110 + energyLevel * 50, 100 + energyLevel * 50]
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity
-            }}
-          />
-
-          {/* Branches */}
-          <g className="branches">
-            {branches.map((branch) => (
-              <motion.line
-                key={branch.id}
-                x1={branch.x1}
-                y1={branch.y1}
-                x2={branch.x2}
-                y2={branch.y2}
-                stroke={branch.color}
-                strokeWidth={branch.thickness}
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ 
-                  pathLength: 1,
-                  strokeWidth: branch.thickness + Math.sin(pulsePhase + branch.id) * 2
-                }}
-                transition={{
-                  duration: 1,
-                  delay: branch.id * 0.1
-                }}
-                filter="url(#energyFilter)"
-              />
-            ))}
-          </g>
-
-          {/* Energy nodes */}
-          {branches.map((branch) => (
-            <motion.circle
-              key={`node-${branch.id}`}
-              cx={branch.x2}
-              cy={branch.y2}
-              r={3 + energyLevel * 5}
-              fill="#FFFFFF"
-              opacity={0.8}
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.8, 1, 0.8]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: branch.id * 0.2
-              }}
-            />
-          ))}
-
-          {/* Pulse waves */}
-          <AnimatePresence>
-            {isQuiet && (
-              <motion.circle
-                cx="200"
-                cy="200"
-                r="0"
-                stroke="#FFFFFF"
-                strokeWidth="2"
-                fill="none"
-                initial={{ r: 0, opacity: 1 }}
-                animate={{ r: 200, opacity: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            )}
-          </AnimatePresence>
-
-          {/* Chaos particles when loud */}
-          {!isQuiet && (
-            <g className="chaos-particles">
-              {[...Array(12)].map((_, i) => (
-                <motion.circle
-                  key={i}
-                  cx={100 + Math.random() * 200}
-                  cy={100 + Math.random() * 200}
-                  r="2"
-                  fill="#FF6B6B"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{
-                    opacity: [0, 1, 0],
-                    scale: [0, 1, 0],
-                    x: [0, (Math.random() - 0.5) * 100],
-                    y: [0, (Math.random() - 0.5) * 100]
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    delay: i * 0.1
-                  }}
-                />
-              ))}
-            </g>
-          )}
-        </svg>
-      </div>
-
-      <div className="tree-status">
-        <div className="status-text">
-          {isQuiet ? "⚡ Energy Building" : "💥 Energy Dispersing"}
-        </div>
-        <div className="energy-indicator">
-          Energy: {Math.round(energyLevel * 100)}%
-        </div>
-        <div className="shape-count">
-          Shapes: {geometricShapes.length} | Branches: {branches.length}
-        </div>
-      </div>
+      <canvas ref={canvasRef} id="canvas" width="600" height="600" />
     </div>
   );
 };

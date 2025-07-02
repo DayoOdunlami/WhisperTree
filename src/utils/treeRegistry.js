@@ -91,15 +91,29 @@ export const treeRegistry = {
     'grant-jenkins-2': {
       id: 'grant-jenkins-2',
       name: '⚡ Grant Jenkins Tree 2',
-      description: 'Geometric energy system',
+      description: 'Baby Groot - Interactive Processing.js with 4 seasons, 8 actions, and character costumes',
       codepenUrl: 'https://codepen.io/grantjenkins/pen/KKoemZO',
       component: 'GrantJenkinsTree2',
-      category: 'geometric',
-      difficulty: 'hard',
+      category: 'processing',
+      difficulty: 'expert',
       hasAudioReactivity: true,
       defaultSettings: {
         isPlaying: true,
         energyLevel: 0.5
+      }
+    },
+    'grant-jenkins-3': {
+      id: 'grant-jenkins-3',
+      name: '🐝 Grant Jenkins Tree 3',
+      description: '3D Bee - Pure CSS 3D with flying bee, 4 flowers, and rotating scene',
+      codepenUrl: 'https://codepen.io/grantjenkins/pen/3D-bee',
+      component: 'GrantJenkinsTree3',
+      category: 'css3d',
+      difficulty: 'expert',
+      hasAudioReactivity: false,
+      defaultSettings: {
+        isPlaying: true,
+        rotationSpeed: 1.0
       }
     },
     'monkey-business': {
@@ -159,6 +173,7 @@ export const treeRegistry = {
       'growing',
       'grant-jenkins-1',
       'grant-jenkins-2',
+      'grant-jenkins-3',
       'monkey-business'
     ];
   },
@@ -201,6 +216,11 @@ export const treeCategories = {
     name: 'Processing.js Trees',
     description: 'Complex animations with Processing.js',
     icon: '🎬'
+  },
+  css3d: {
+    name: 'CSS 3D Trees',
+    description: 'Pure CSS 3D transforms and animations',
+    icon: '🎯'
   }
 };
 
