@@ -28,7 +28,52 @@ const GrantJenkinsTree2 = ({ isQuiet, volume, isPlaying = true }) => {
         if (!canvasRef.current) return;
 
         const sketchProc = function(processingInstance) {
-          with (processingInstance) {
+          // Bind Processing.js functions to avoid 'with' statement
+          const p = processingInstance;
+          const size = p.size.bind(p);
+          const frameRate = p.frameRate.bind(p);
+          const textFont = p.textFont.bind(p);
+          const smooth = p.smooth.bind(p);
+          const keyPressed = p.keyPressed.bind(p);
+          const keyReleased = p.keyReleased.bind(p);
+          const mouseClicked = p.mouseClicked.bind(p);
+          const mouseOut = p.mouseOut.bind(p);
+          const mouseMoved = p.mouseMoved.bind(p);
+          const mouseX = p.mouseX;
+          const mouseY = p.mouseY;
+          const millis = p.millis.bind(p);
+          const createFont = p.createFont.bind(p);
+          const color = p.color.bind(p);
+          const rect = p.rect.bind(p);
+          const textAlign = p.textAlign.bind(p);
+          const textSize = p.textSize.bind(p);
+          const text = p.text.bind(p);
+          const CENTER = p.CENTER;
+          const noStroke = p.noStroke.bind(p);
+          const fill = p.fill.bind(p);
+          const pushStyle = p.pushStyle.bind(p);
+          const popStyle = p.popStyle.bind(p);
+          const background = p.background.bind(p);
+          const noFill = p.noFill.bind(p);
+          const stroke = p.stroke.bind(p);
+          const strokeWeight = p.strokeWeight.bind(p);
+          const beginShape = p.beginShape.bind(p);
+          const vertex = p.vertex.bind(p);
+          const bezierVertex = p.bezierVertex.bind(p);
+          const endShape = p.endShape.bind(p);
+          const CLOSE = p.COSE;
+          const bezier = p.bezier.bind(p);
+          const get = p.get.bind(p);
+          const pushMatrix = p.pushMatrix.bind(p);
+          const translate = p.translate.bind(p);
+          const scale = p.scale.bind(p);
+          const popMatrix = p.popMatrix.bind(p);
+          const image = p.image.bind(p);
+          const ellipse = p.ellipse.bind(p);
+          const line = p.line.bind(p);
+          const radians = p.radians.bind(p);
+          const rotate = p.rotate.bind(p);
+          const Math = window.Math;
             size(600, 600);
             frameRate(60);
             textFont(createFont("Trebuchet MS"));
@@ -893,11 +938,10 @@ const GrantJenkinsTree2 = ({ isQuiet, volume, isPlaying = true }) => {
 
             scene = new Scene();
             
-            draw = function() {
+            p.draw = function() {
               scene.go();
             };
-          }
-        };
+          };
 
         processingInstanceRef.current = new Processing(canvasRef.current, sketchProc);
       } catch (error) {
