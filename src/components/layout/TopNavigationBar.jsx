@@ -18,27 +18,27 @@ const TopNavigationBar = ({
 }) => {
   return (
     <motion.div 
-      className="top-nav-bar fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200/50 shadow-sm"
+      className="top-nav-bar fixed top-0 w-full bg-emerald-500/95 text-white shadow-lg z-50 border-b border-emerald-200/40 rounded-b-2xl backdrop-blur-md"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto">
         
         {/* Left: Branding */}
         <div className="flex items-center space-x-4">
           <motion.h1 
-            className="text-xl font-bold text-green-700 flex items-center space-x-2"
+            className="text-2xl font-extrabold text-white flex items-center space-x-2 tracking-tight drop-shadow"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
-            <span className="text-2xl">🌳</span>
+            <span className="text-3xl">🌳</span>
             <span>WhisperTree</span>
           </motion.h1>
         </div>
         
         {/* Center: Tree Controls */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           <TreeSelector 
             currentTree={currentTree} 
             onSelect={onTreeSelect} 
@@ -56,26 +56,25 @@ const TopNavigationBar = ({
           <div className="flex space-x-2">
             <motion.button
               onClick={onQuietToggle}
-              className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm ${
                 isQuiet 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-green-100'
+                  ? 'bg-white text-emerald-600 ring-2 ring-emerald-300' 
+                  : 'bg-emerald-400/80 text-white hover:bg-emerald-300/90'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 0.97 }}
             >
               🌱 Quiet
             </motion.button>
-            
             <motion.button
               onClick={onLoudToggle}
-              className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm ${
                 !isQuiet 
-                  ? 'bg-red-500 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-red-100'
+                  ? 'bg-white text-rose-600 ring-2 ring-rose-300' 
+                  : 'bg-rose-400/80 text-white hover:bg-rose-300/90'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 0.97 }}
             >
               🍃 Loud
             </motion.button>
@@ -83,20 +82,20 @@ const TopNavigationBar = ({
           
           <motion.button 
             onClick={() => onViewChange('development')}
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-4 py-2 text-sm font-semibold rounded-xl transition-colors shadow-sm ${
               currentView === 'development' 
-                ? 'bg-blue-100 text-blue-700' 
-                : 'bg-gray-100/50 text-gray-600 hover:bg-gray-200/50'
+                ? 'bg-blue-600 text-white' 
+                : 'bg-blue-100/80 text-blue-700 hover:bg-blue-200/90'
             }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.07 }}
+            whileTap={{ scale: 0.97 }}
           >
             📊 Development
           </motion.button>
           
           <motion.button 
             onClick={onSettingsClick}
-            className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100/50 rounded-lg transition-colors"
+            className="p-2 text-white hover:text-emerald-100 hover:bg-emerald-600/60 rounded-xl transition-colors"
             whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
             title="Settings"
