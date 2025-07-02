@@ -1,59 +1,78 @@
 # WhisperTree
 
-WhisperTree is a React-based web application that encourages children to maintain quiet environments through gamified visual feedback. The app visualizes ambient noise levels using an animated tree that blooms when quiet and sheds leaves/petals when loud.
+A modern React application showcasing beautiful interactive animations built with Vite.
 
 ## Features
-- Real-time microphone input and noise detection
-- Multiple animated tree types that respond to sound levels
-- Child-friendly UI with Tailwind CSS
-- Adjustable sensitivity and tree type selection
-- No audio is recorded or stored (privacy-first)
 
-## Tree Types Available
-1. **🌱 Growing Tree** - GSAP-style growing animations with progressive branch development
-2. **🌺 Flowering Tree** - Scene.js-based tree with complex multi-level branches and flowers
-3. **🌳 Fractal Tree** - Canvas-based recursive fractal patterns with mathematical precision
-4. **😊 Character Tree** - Character-based tree with facial expressions and bee animations
-5. **🌿 Myau Original** - Original CodePen adaptation with GSAP animations
-6. **🌿 Grant Jenkins Tree 1** - Sophisticated SVG tree with particle effects and wind animations
-7. **⚡ Grant Jenkins Tree 2** - Geometric energy system with mathematical patterns and chaos particles
+- 🚀 Built with Vite for fast development and builds
+- ⚛️ React 18 with modern hooks and patterns
+- 🎨 Clean, minimalist UI design
+- 📱 Responsive design for all devices
+- 🎯 Individual pages for each animation
+- 🔗 React Router for seamless navigation
 
-## Getting Started
+## Animations
 
-### 1. Install dependencies
+- **Baby Groot** - Interactive tree animation
+- **3D Bee** - Three-dimensional bee visualization  
+- **Flowering Tree** - Beautiful flowering animation
+- **Myau Tree** - Unique tree visualization
+- **Monkey Business** - Playful monkey animation
+
+## Development
+
 ```bash
+# Install dependencies
 npm install
-```
 
-### 2. Start the development server
-```bash
-npm start
-```
+# Start development server
+npm run dev
 
-### 3. Build for production
-```bash
+# Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
-
-## Tech Stack
-- React
-- Tailwind CSS
-- Framer Motion
-- Web Audio API
-
-## Development Workflow
-1. Make changes locally
-2. Test with `npm start`
-3. Commit and push to your GitHub repo
-4. Deploy to Vercel (auto-deploy via GitHub integration)
 
 ## Deployment
-To deploy to Vercel:
-```bash
-npm install -g vercel
-vercel --prod
+
+This project is configured for deployment on Vercel. Simply push to GitHub and Vercel will automatically build and deploy the application.
+
+## Tech Stack
+
+- **Frontend**: React 18, Vite
+- **Routing**: React Router DOM
+- **Styling**: CSS3 with modern features
+- **Deployment**: Vercel
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── TopMenu.jsx          # Navigation component
+│   └── TopMenu.css
+├── pages/
+│   ├── HomePage.jsx         # Landing page
+│   ├── HomePage.css
+│   ├── BabyGrootPage.jsx    # Animation pages
+│   ├── ThreeDBeePage.jsx
+│   ├── FloweringTreePage.jsx
+│   ├── MyauTreePage.jsx
+│   └── MonkeyBusinessPage.jsx
+├── App.jsx                  # Main app component
+├── main.jsx                 # Entry point
+└── index.css               # Global styles
 ```
 
----
+## Adding New Animations
 
-**Note:** All audio processing is done in-browser. No audio is stored or sent to any server.
+1. Create a new page component in `src/pages/`
+2. Add the route to `src/App.jsx`
+3. Add the menu item to `src/components/TopMenu.jsx`
+4. Integrate your animation code
+
+## License
+
+MIT License - feel free to use this project for your own animations! 
