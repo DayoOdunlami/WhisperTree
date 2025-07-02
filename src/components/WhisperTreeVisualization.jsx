@@ -4,6 +4,7 @@ import MyauTreeOriginal from './MyauTreeOriginal';
 import FloweringTree from './FloweringTree';
 import GrantJenkinsTree1 from './trees/GrantJenkinsTree1';
 import GrantJenkinsTree2 from './trees/GrantJenkinsTree2';
+import GrantJenkinsTree3 from './trees/GrantJenkinsTree3';
 import MonkeyBusiness from './trees/MonkeyBusiness';
 
 // ===== OPTION 1: SIMPLE GROWING TREE SVG (MYAU CODEPEN) =====
@@ -432,6 +433,8 @@ const WhisperTreeVisualization = ({ isQuiet, volume, treeType = 'growing', isPla
       return <GrantJenkinsTree1 isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'grant-jenkins-2':
       return <GrantJenkinsTree2 isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
+    case 'grant-jenkins-3':
+      return <GrantJenkinsTree3 isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     case 'monkey-business':
       return <MonkeyBusiness isQuiet={isQuiet} volume={volume} isPlaying={isPlaying} />;
     default:
